@@ -1,9 +1,10 @@
 # Intel 8080 Space Invaders
 
-## :space_invader: :space_invader: :space_invader: :space_invader:
-## :space_invader: :space_invader: :space_invader: :space_invader:
-## :space_invader: :space_invader: :space_invader: :space_invader:
-## :space_invader: :space_invader: :space_invader: :space_invader:
+:space_invader: :space_invader: :space_invader: :space_invader: </br>
+:space_invader: :space_invader: :space_invader: :space_invader: </br>
+:space_invader: :space_invader: :space_invader: :space_invader: </br>
+:space_invader: :space_invader: :space_invader: :space_invader: </br>
+
 
 # References
 
