@@ -11,12 +11,16 @@ var Cyan = "\033[36m"
 func Disassemble8080(rom []byte) {
 	fmt.Println("########## 8080 Opcode ##########")
 
+L:
 	for i := 0; i < len(rom); i++ {
 		opcode := rom[i]
 
 		switch opcode {
 		case 0x00:
 			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
+		case 0x01:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI B,", Green)+colorize(" #$%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0x0F:
 			fmt.Printf("%.4X %.2X "+colorize("RRC", Green)+"\n", i, opcode)
 
@@ -24,6 +28,8 @@ func Disassemble8080(rom []byte) {
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI H,", Green)+colorize(" #$%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 
+		case 0x27:
+			fmt.Printf("%.4X %.2X "+colorize("DAA", Green)+"\n", i, opcode)
 		case 0x32:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("STA", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
@@ -39,6 +45,13 @@ func Disassemble8080(rom []byte) {
 
 		case 0xA7:
 			fmt.Printf("%.4X %.2X "+colorize("ANA A", Green)+"\n", i, opcode)
+
+		case 0xAF:
+			fmt.Printf("%.4X %.2X "+colorize("XRA A", Green)+"\n", i, opcode)
+
+		case 0xC2:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JNZ", Green)+colorize(" $%.4X", Cyan)+"\n", i-2, opcode, lb, hb, addr)
 
 		case 0xC3:
 			lb, hb, addr := getAddr(&i, rom)
@@ -78,6 +91,7 @@ func Disassemble8080(rom []byte) {
 
 		default:
 			fmt.Printf("Unknown Opcode %.2X\n", opcode)
+			break L
 		}
 	}
 	fmt.Println("#################################")
