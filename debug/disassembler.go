@@ -27,7 +27,6 @@ L:
 		case 0x21:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI H,", Green)+colorize(" #$%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
-
 		case 0x27:
 			fmt.Printf("%.4X %.2X "+colorize("DAA", Green)+"\n", i, opcode)
 		case 0x32:
@@ -45,14 +44,12 @@ L:
 
 		case 0xA7:
 			fmt.Printf("%.4X %.2X "+colorize("ANA A", Green)+"\n", i, opcode)
-
 		case 0xAF:
 			fmt.Printf("%.4X %.2X "+colorize("XRA A", Green)+"\n", i, opcode)
 
 		case 0xC2:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JNZ", Green)+colorize(" $%.4X", Cyan)+"\n", i-2, opcode, lb, hb, addr)
-
 		case 0xC3:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JMP", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
@@ -79,6 +76,8 @@ L:
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("IN ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
 
+		case 0xE1:
+			fmt.Printf("%.4X %.2X "+colorize("POP H", Green)+"\n", i, opcode)
 		case 0xE5:
 			fmt.Printf("%.4X %.2X "+colorize("PUSH H", Green)+"\n", i, opcode)
 
