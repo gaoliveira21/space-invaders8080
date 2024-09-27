@@ -35,6 +35,16 @@ L:
 			fmt.Printf("%.4X %.2X %.2X "+colorize("MVI B,", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
 		case 0x07:
 			fmt.Printf("%.4X %.2X "+colorize("RLC", Green)+"\n", i, opcode)
+		case 0x08:
+			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
+		case 0x09:
+			fmt.Printf("%.4X %.2X "+colorize("DAD B", Green)+"\n", i, opcode)
+		case 0x0A:
+			fmt.Printf("%.4X %.2X "+colorize("LDAX B", Green)+"\n", i, opcode)
+		case 0x0B:
+			fmt.Printf("%.4X %.2X "+colorize("DCX B", Green)+"\n", i, opcode)
+		case 0x0C:
+			fmt.Printf("%.4X %.2X "+colorize("INR C", Green)+"\n", i, opcode)
 		case 0x0D:
 			fmt.Printf("%.4X %.2X "+colorize("DCR C", Green)+"\n", i, opcode)
 		case 0x0E:
@@ -136,10 +146,32 @@ L:
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("MVI A,", Green)+colorize(" #0x%.2X\n", Cyan), i-1, opcode, b, b)
 
+		case 0x40:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,B", Green)+"\n", i, opcode)
+		case 0x41:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,C", Green)+"\n", i, opcode)
+		case 0x42:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,D", Green)+"\n", i, opcode)
+		case 0x43:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,E", Green)+"\n", i, opcode)
+		case 0x44:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,H", Green)+"\n", i, opcode)
+		case 0x45:
+			fmt.Printf("%.4X %.2X "+colorize("MOV B,L", Green)+"\n", i, opcode)
 		case 0x46:
 			fmt.Printf("%.4X %.2X "+colorize("MOV B,M", Green)+"\n", i, opcode)
 		case 0x47:
 			fmt.Printf("%.4X %.2X "+colorize("MOV B,A", Green)+"\n", i, opcode)
+		case 0x48:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,B", Green)+"\n", i, opcode)
+		case 0x49:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,C", Green)+"\n", i, opcode)
+		case 0x4A:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,D", Green)+"\n", i, opcode)
+		case 0x4B:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,E", Green)+"\n", i, opcode)
+		case 0x4C:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,H", Green)+"\n", i, opcode)
 		case 0x4E:
 			fmt.Printf("%.4X %.2X "+colorize("MOV C,M", Green)+"\n", i, opcode)
 		case 0x4F:
@@ -238,6 +270,16 @@ L:
 			fmt.Printf("%.4X %.2X "+colorize("ADC B", Green)+"\n", i, opcode)
 		case 0x89:
 			fmt.Printf("%.4X %.2X "+colorize("ADC C", Green)+"\n", i, opcode)
+		case 0x8A:
+			fmt.Printf("%.4X %.2X "+colorize("ADC D", Green)+"\n", i, opcode)
+		case 0x8B:
+			fmt.Printf("%.4X %.2X "+colorize("ADC E", Green)+"\n", i, opcode)
+		case 0x8C:
+			fmt.Printf("%.4X %.2X "+colorize("ADC H", Green)+"\n", i, opcode)
+		case 0x8D:
+			fmt.Printf("%.4X %.2X "+colorize("ADC L", Green)+"\n", i, opcode)
+		case 0x8E:
+			fmt.Printf("%.4X %.2X "+colorize("ADC M", Green)+"\n", i, opcode)
 
 		case 0x90:
 			fmt.Printf("%.4X %.2X "+colorize("SUB B", Green)+"\n", i, opcode)
