@@ -54,6 +54,8 @@ L:
 		case 0x0F:
 			fmt.Printf("%.4X %.2X "+colorize("RRC", Green)+"\n", i, opcode)
 
+		case 0x10:
+			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
 		case 0x11:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI D,", Green)+colorize(" #$%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
@@ -69,11 +71,29 @@ L:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("MVI D,", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0x17:
+			fmt.Printf("%.4X %.2X "+colorize("RAL", Green)+"\n", i, opcode)
+		case 0x18:
+			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
 		case 0x19:
 			fmt.Printf("%.4X %.2X "+colorize("DAD D", Green)+"\n", i, opcode)
 		case 0x1A:
 			fmt.Printf("%.4X %.2X "+colorize("LDAX D", Green)+"\n", i, opcode)
+		case 0x1B:
+			fmt.Printf("%.4X %.2X "+colorize("DCX D", Green)+"\n", i, opcode)
+		case 0x1C:
+			fmt.Printf("%.4X %.2X "+colorize("INR E", Green)+"\n", i, opcode)
+		case 0x1D:
+			fmt.Printf("%.4X %.2X "+colorize("DCR E", Green)+"\n", i, opcode)
+		case 0x1E:
+			i++
+			b := uint16(rom[i])
+			fmt.Printf("%.4X %.2X %.2X "+colorize("MVI E,", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0x1F:
+			fmt.Printf("%.4X %.2X "+colorize("RAR", Green)+"\n", i, opcode)
 
+		case 0x20:
+			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
 		case 0x21:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI H,", Green)+colorize(" #$%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
@@ -112,6 +132,8 @@ L:
 		case 0x2F:
 			fmt.Printf("%.4X %.2X "+colorize("CMA", Green)+"\n", i, opcode)
 
+		case 0x30:
+			fmt.Printf("%.4X %.2X "+colorize("NOP", Green)+"\n", i, opcode)
 		case 0x31:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LXI SP,", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
@@ -137,6 +159,8 @@ L:
 		case 0x3A:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("LDA", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0x3B:
+			fmt.Printf("%.4X %.2X "+colorize("DCX SP", Green)+"\n", i, opcode)
 		case 0x3C:
 			fmt.Printf("%.4X %.2X "+colorize("INR A", Green)+"\n", i, opcode)
 		case 0x3D:
@@ -145,6 +169,8 @@ L:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("MVI A,", Green)+colorize(" #0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0x3F:
+			fmt.Printf("%.4X %.2X "+colorize("CMC", Green)+"\n", i, opcode)
 
 		case 0x40:
 			fmt.Printf("%.4X %.2X "+colorize("MOV B,B", Green)+"\n", i, opcode)
@@ -172,15 +198,41 @@ L:
 			fmt.Printf("%.4X %.2X "+colorize("MOV C,E", Green)+"\n", i, opcode)
 		case 0x4C:
 			fmt.Printf("%.4X %.2X "+colorize("MOV C,H", Green)+"\n", i, opcode)
+		case 0x4D:
+			fmt.Printf("%.4X %.2X "+colorize("MOV C,L", Green)+"\n", i, opcode)
 		case 0x4E:
 			fmt.Printf("%.4X %.2X "+colorize("MOV C,M", Green)+"\n", i, opcode)
 		case 0x4F:
 			fmt.Printf("%.4X %.2X "+colorize("MOV C,A", Green)+"\n", i, opcode)
 
+		case 0x50:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,B", Green)+"\n", i, opcode)
+		case 0x51:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,C", Green)+"\n", i, opcode)
+		case 0x52:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,D", Green)+"\n", i, opcode)
+		case 0x53:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,E", Green)+"\n", i, opcode)
+		case 0x54:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,H", Green)+"\n", i, opcode)
+		case 0x55:
+			fmt.Printf("%.4X %.2X "+colorize("MOV D,L", Green)+"\n", i, opcode)
 		case 0x56:
 			fmt.Printf("%.4X %.2X "+colorize("MOV D,M", Green)+"\n", i, opcode)
 		case 0x57:
 			fmt.Printf("%.4X %.2X "+colorize("MOV D,A", Green)+"\n", i, opcode)
+		case 0x58:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,B", Green)+"\n", i, opcode)
+		case 0x59:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,C", Green)+"\n", i, opcode)
+		case 0x5A:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,D", Green)+"\n", i, opcode)
+		case 0x5B:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,E", Green)+"\n", i, opcode)
+		case 0x5C:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,H", Green)+"\n", i, opcode)
+		case 0x5D:
+			fmt.Printf("%.4X %.2X "+colorize("MOV E,L", Green)+"\n", i, opcode)
 		case 0x5E:
 			fmt.Printf("%.4X %.2X "+colorize("MOV E,M", Green)+"\n", i, opcode)
 		case 0x5F:
@@ -249,6 +301,8 @@ L:
 			fmt.Printf("%.4X %.2X "+colorize("MOV A,L", Green)+"\n", i, opcode)
 		case 0x7E:
 			fmt.Printf("%.4X %.2X "+colorize("MOV A,M", Green)+"\n", i, opcode)
+		case 0x7F:
+			fmt.Printf("%.4X %.2X "+colorize("MOV A,A", Green)+"\n", i, opcode)
 
 		case 0x80:
 			fmt.Printf("%.4X %.2X "+colorize("ADD B", Green)+"\n", i, opcode)
@@ -280,6 +334,8 @@ L:
 			fmt.Printf("%.4X %.2X "+colorize("ADC L", Green)+"\n", i, opcode)
 		case 0x8E:
 			fmt.Printf("%.4X %.2X "+colorize("ADC M", Green)+"\n", i, opcode)
+		case 0x8F:
+			fmt.Printf("%.4X %.2X "+colorize("ADC A", Green)+"\n", i, opcode)
 
 		case 0x90:
 			fmt.Printf("%.4X %.2X "+colorize("SUB B", Green)+"\n", i, opcode)
@@ -297,6 +353,22 @@ L:
 			fmt.Printf("%.4X %.2X "+colorize("SUB M", Green)+"\n", i, opcode)
 		case 0x97:
 			fmt.Printf("%.4X %.2X "+colorize("SUB A", Green)+"\n", i, opcode)
+		case 0x98:
+			fmt.Printf("%.4X %.2X "+colorize("SBB B", Green)+"\n", i, opcode)
+		case 0x99:
+			fmt.Printf("%.4X %.2X "+colorize("SBB C", Green)+"\n", i, opcode)
+		case 0x9A:
+			fmt.Printf("%.4X %.2X "+colorize("SBB D", Green)+"\n", i, opcode)
+		case 0x9B:
+			fmt.Printf("%.4X %.2X "+colorize("SBB E", Green)+"\n", i, opcode)
+		case 0x9C:
+			fmt.Printf("%.4X %.2X "+colorize("SBB H", Green)+"\n", i, opcode)
+		case 0x9D:
+			fmt.Printf("%.4X %.2X "+colorize("SBB L", Green)+"\n", i, opcode)
+		case 0x9E:
+			fmt.Printf("%.4X %.2X "+colorize("SBB M", Green)+"\n", i, opcode)
+		case 0x9F:
+			fmt.Printf("%.4X %.2X "+colorize("SBB A", Green)+"\n", i, opcode)
 
 		case 0xA0:
 			fmt.Printf("%.4X %.2X "+colorize("ANA B", Green)+"\n", i, opcode)
@@ -383,6 +455,8 @@ L:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("ADI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xC7:
+			fmt.Printf("%.4X %.2X "+colorize("RST 0", Green)+"\n", i, opcode)
 		case 0xC8:
 			fmt.Printf("%.4X %.2X "+colorize("RZ", Green)+"\n", i, opcode)
 		case 0xC9:
@@ -390,12 +464,21 @@ L:
 		case 0xCA:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JZ", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xCB:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JMP", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xCC:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CC", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xCD:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CALL", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xCE:
+			i++
+			b := uint16(rom[i])
+			fmt.Printf("%.4X %.2X %.2X "+colorize("ACI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xCF:
+			fmt.Printf("%.4X %.2X "+colorize("RST 1", Green)+"\n", i, opcode)
 
 		case 0xD0:
 			fmt.Printf("%.4X %.2X "+colorize("RNC", Green)+"\n", i, opcode)
@@ -430,43 +513,102 @@ L:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("IN ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xDC:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CC", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xDD:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CALL", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xDE:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("SBI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xDF:
+			fmt.Printf("%.4X %.2X "+colorize("RST 3", Green)+"\n", i, opcode)
 
+		case 0xE0:
+			fmt.Printf("%.4X %.2X "+colorize("RPO", Green)+"\n", i, opcode)
 		case 0xE1:
 			fmt.Printf("%.4X %.2X "+colorize("POP H", Green)+"\n", i, opcode)
+		case 0xE2:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JPO", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xE3:
 			fmt.Printf("%.4X %.2X "+colorize("XTHL", Green)+"\n", i, opcode)
+		case 0xE4:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CPO", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xE5:
 			fmt.Printf("%.4X %.2X "+colorize("PUSH H", Green)+"\n", i, opcode)
 		case 0xE6:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("ANI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xE7:
+			fmt.Printf("%.4X %.2X "+colorize("RST 4", Green)+"\n", i, opcode)
+		case 0xE8:
+			fmt.Printf("%.4X %.2X "+colorize("RPE", Green)+"\n", i, opcode)
 		case 0xE9:
 			fmt.Printf("%.4X %.2X "+colorize("PCHL", Green)+"\n", i, opcode)
+		case 0xEA:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JPE", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xEB:
 			fmt.Printf("%.4X %.2X "+colorize("XCHG", Green)+"\n", i, opcode)
+		case 0xEC:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CPE", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xED:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CALL", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xEE:
+			i++
+			b := uint16(rom[i])
+			fmt.Printf("%.4X %.2X %.2X "+colorize("XRI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xEF:
+			fmt.Printf("%.4X %.2X "+colorize("RST 5", Green)+"\n", i, opcode)
 
+		case 0xF0:
+			fmt.Printf("%.4X %.2X "+colorize("RP", Green)+"\n", i, opcode)
 		case 0xF1:
 			fmt.Printf("%.4X %.2X "+colorize("POP PSW", Green)+"\n", i, opcode)
+		case 0xF2:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JP", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xF3:
+			fmt.Printf("%.4X %.2X "+colorize("DI", Green)+"\n", i, opcode)
+		case 0xF4:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CP", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xF5:
 			fmt.Printf("%.4X %.2X "+colorize("PUSH PSW", Green)+"\n", i, opcode)
 		case 0xF6:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("ORI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xF7:
+			fmt.Printf("%.4X %.2X "+colorize("RST 6", Green)+"\n", i, opcode)
+		case 0xF8:
+			fmt.Printf("%.4X %.2X "+colorize("RM ", Green)+colorize(" #$0x%.2X\n", Cyan), i, opcode)
+		case 0xF9:
+			fmt.Printf("%.4X %.2X "+colorize("SPHL", Green)+"\n", i, opcode)
 		case 0xFA:
 			lb, hb, addr := getAddr(&i, rom)
 			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("JM", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xFB:
 			fmt.Printf("%.4X %.2X "+colorize("EI", Green)+"\n", i, opcode)
+		case 0xFC:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CM", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
+		case 0xFD:
+			lb, hb, addr := getAddr(&i, rom)
+			fmt.Printf("%.4X %.2X %.2X %.2X "+colorize("CALL", Green)+colorize(" $%.4X\n", Cyan), i-2, opcode, lb, hb, addr)
 		case 0xFE:
 			i++
 			b := uint16(rom[i])
 			fmt.Printf("%.4X %.2X %.2X "+colorize("CPI ", Green)+colorize(" #$0x%.2X\n", Cyan), i-1, opcode, b, b)
+		case 0xFF:
+			fmt.Printf("%.4X %.2X "+colorize("RST 7", Green)+"\n", i, opcode)
 
 		default:
 			fmt.Printf("Unknown Opcode %.2X\n", opcode)
@@ -481,12 +623,15 @@ func colorize(instruction string, color string) string {
 }
 
 func getAddr(index *int, rom []byte) (uint16, uint16, uint16) {
+	if *index+2 >= len(rom) {
+		return 0, 0, 0
+	}
+
 	*index++
 	lb := uint16(rom[*index])
 	*index++
 	hb := uint16(rom[*index])
 
 	addr := (hb << 8) | lb
-
 	return lb, hb, addr
 }
