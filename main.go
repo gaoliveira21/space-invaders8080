@@ -11,7 +11,7 @@ func main() {
 	log.Println("Starting Space Invaders...")
 	log.Println("Reading ROM...")
 
-	rom, err := os.ReadFile("roms/space-invaders/invaders.e")
+	rom, err := os.ReadFile("roms/space-invaders/invaders")
 
 	if err != nil {
 		log.Fatalln("Cannot read ROM", err)
