@@ -198,3 +198,16 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 		}
 	})
 }
+
+func Test_MVI_B_Flags(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x06, 0x42}
+	cpu.LoadProgram(program)
+
+	cpu.Run()
+
+	if cpu.b != 0x42 {
+		t.Errorf("MVI B did not load the correct value to register")
+	}
+}
