@@ -211,3 +211,22 @@ func Test_MVI_B_Flags(t *testing.T) {
 		t.Errorf("MVI B did not load the correct value to register")
 	}
 }
+
+func Test_RLC_Flags(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x07, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.a = 0x80
+
+	cpu.Run()
+
+	if cpu.a != 0x01 {
+		t.Errorf("RLC did not set the correct value to register A")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("RLC did not set the carry flag correctly")
+	}
+}

@@ -32,7 +32,7 @@ func NewIntel8080() *Intel8080 {
 	}
 
 	cpu.instructions = [256]*Intel8080Instruction{
-		{cpu._NOP, "NOP", 1}, {cpu._LXI_B, "LXI B", 3}, {cpu._STAX_B, "STAX B", 1}, {cpu._INX_B, "INX B", 1}, {cpu._INR_B, "INR B", 1}, {cpu._DCR_B, "DCR B", 1}, {cpu._MVI_B, "MVI B", 2},
+		{cpu._NOP, "NOP", 1}, {cpu._LXI_B, "LXI B", 3}, {cpu._STAX_B, "STAX B", 1}, {cpu._INX_B, "INX B", 1}, {cpu._INR_B, "INR B", 1}, {cpu._DCR_B, "DCR B", 1}, {cpu._MVI_B, "MVI B", 2}, {cpu._RLC, "RLC", 1}, {cpu._NOP, "*NOP", 1},
 	}
 
 	return cpu
@@ -98,4 +98,10 @@ func (cpu *Intel8080) _DCR_B() {
 func (cpu *Intel8080) _MVI_B() {
 	cpu.b = cpu.memory[cpu.pc]
 	cpu.pc++
+}
+
+func (cpu *Intel8080) _RLC() {
+	highBit := cpu.a >> 7
+	cpu.a = (cpu.a << 1) | highBit
+	cpu.flags.Set(Carry, highBit == 1)
 }
