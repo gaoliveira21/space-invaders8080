@@ -230,3 +230,33 @@ func Test_RLC_Flags(t *testing.T) {
 		t.Errorf("RLC did not set the carry flag correctly")
 	}
 }
+
+func Test_JNZ_ZeroFlagSet(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xc2, 0x88, 0xff}
+	cpu.LoadProgram(program)
+
+	cpu.flags.Set(Zero, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JNZ dit not set pc correctly")
+	}
+}
+
+func Test_JNZ_ZeroFlagUnset(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xc2, 0x88, 0xff, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.flags.Set(Zero, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JNZ dit not set pc correctly")
+	}
+}
