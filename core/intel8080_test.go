@@ -296,3 +296,22 @@ func TestCALL(t *testing.T) {
 		t.Errorf("CALL dit not write correctly to memory")
 	}
 }
+
+func TestRET(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xc9, 0x34, 0x12, 0x00}
+	cpu.LoadProgram(program)
+
+	cpu.sp = 1
+
+	cpu.Run()
+
+	if cpu.sp != 3 {
+		t.Errorf("RET dit not set SP correctly")
+	}
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CALL dit not set PC correctly")
+	}
+}

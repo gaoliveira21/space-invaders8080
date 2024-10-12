@@ -245,7 +245,7 @@ func NewIntel8080() *Intel8080 {
 		0xc6: {cpu._NI, "Not Impl", 0},
 		0xc7: {cpu._NI, "Not Impl", 0},
 		0xc8: {cpu._NI, "Not Impl", 0},
-		0xc9: {cpu._NI, "Not Impl", 0},
+		0xc9: {cpu._RET, "RET", 1},
 		0xca: {cpu._NI, "Not Impl", 0},
 		0xcb: {cpu._NI, "Not Impl", 0},
 		0xcc: {cpu._NI, "Not Impl", 0},
@@ -405,5 +405,11 @@ func (cpu *Intel8080) _CALL() {
 	cpu.sp -= 2
 
 	lb, hb := uint16(cpu.memory[cpu.pc]), uint16(cpu.memory[cpu.pc+1])
+	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) _RET() {
+	lb, hb := uint16(cpu.memory[cpu.sp]), uint16(cpu.memory[cpu.sp+1])
+	cpu.sp += 2
 	cpu.pc = (hb << 8) | lb
 }
