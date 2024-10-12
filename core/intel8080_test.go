@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -228,6 +229,34 @@ func Test_RLC_Flags(t *testing.T) {
 
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RLC did not set the carry flag correctly")
+	}
+}
+
+func Test_DAD_B_Flags(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x09, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.h = 0xF0
+	cpu.l = 0x12
+	cpu.b = 0x44
+	cpu.c = 0x55
+
+	fmt.Println(78951)
+
+	cpu.Run()
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("DAD B did not set the carry flag correctly")
+	}
+
+	if cpu.l != 0x67 {
+		t.Errorf("DAD B did not set the L register correctly")
+	}
+
+	if cpu.h != 0x34 {
+		t.Errorf("DAD B did not set the H register correctly")
 	}
 }
 

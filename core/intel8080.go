@@ -41,7 +41,7 @@ func NewIntel8080() *Intel8080 {
 		0x06: {cpu._MVI_B, "MVI B", 2},
 		0x07: {cpu._RLC, "RLC", 1},
 		0x08: {cpu._NOP, "*NOP", 1},
-		0x09: {cpu._NI, "Not Impl", 0},
+		0x09: {cpu._DAD_B, "DAD B", 1},
 		0x0a: {cpu._NI, "Not Impl", 0},
 		0x0b: {cpu._NI, "Not Impl", 0},
 		0x0c: {cpu._NI, "Not Impl", 0},
@@ -378,6 +378,18 @@ func (cpu *Intel8080) _RLC() {
 	highBit := cpu.a >> 7
 	cpu.a = (cpu.a << 1) | highBit
 	cpu.flags.Set(Carry, highBit == 1)
+}
+
+func (cpu *Intel8080) _DAD_B() {
+	hl := uint32(cpu.h)<<8 | uint32(cpu.l)
+	bc := uint32(cpu.b)<<8 | uint32(cpu.c)
+
+	result := hl + bc
+
+	cpu.h = byte(result >> 8)
+	cpu.l = byte(result & 0xFF)
+
+	cpu.flags.Set(Carry, result > 0xFFFF)
 }
 
 func (cpu *Intel8080) _JNZ() {
