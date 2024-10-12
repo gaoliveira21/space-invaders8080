@@ -260,3 +260,39 @@ func Test_JNZ_ZeroFlagUnset(t *testing.T) {
 		t.Errorf("JNZ dit not set pc correctly")
 	}
 }
+
+func Test_JMP(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xc3, 0x96, 0xed}
+	cpu.LoadProgram(program)
+
+	cpu.Run()
+
+	if cpu.pc != 0xed96 {
+		t.Errorf("JMP dit not set pc correctly")
+	}
+}
+
+func TestCALL(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xcd, 0x34, 0x12, 0x09, 0x00, 0x00, 0x00}
+	cpu.LoadProgram(program)
+
+	cpu.sp = 6
+
+	cpu.Run()
+
+	if cpu.sp != 4 {
+		t.Errorf("CALL dit not set SP correctly")
+	}
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CALL dit not set PC correctly")
+	}
+
+	if cpu.memory[cpu.sp+1] != 0x00 || cpu.memory[cpu.sp] != 0x03 {
+		t.Errorf("CALL dit not write correctly to memory")
+	}
+}

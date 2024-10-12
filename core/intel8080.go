@@ -239,7 +239,7 @@ func NewIntel8080() *Intel8080 {
 		0xc0: {cpu._NI, "Not Impl", 0},
 		0xc1: {cpu._NI, "Not Impl", 0},
 		0xc2: {cpu._JNZ, "JNZ addr", 3},
-		0xc3: {cpu._NI, "Not Impl", 0},
+		0xc3: {cpu._JMP, "JMP addr", 3},
 		0xc4: {cpu._NI, "Not Impl", 0},
 		0xc5: {cpu._NI, "Not Impl", 0},
 		0xc6: {cpu._NI, "Not Impl", 0},
@@ -249,7 +249,7 @@ func NewIntel8080() *Intel8080 {
 		0xca: {cpu._NI, "Not Impl", 0},
 		0xcb: {cpu._NI, "Not Impl", 0},
 		0xcc: {cpu._NI, "Not Impl", 0},
-		0xcd: {cpu._NI, "Not Impl", 0},
+		0xcd: {cpu._CALL, "CALL addr", 3},
 		0xce: {cpu._NI, "Not Impl", 0},
 		0xcf: {cpu._NI, "Not Impl", 0},
 
@@ -389,4 +389,21 @@ func (cpu *Intel8080) _JNZ() {
 	} else {
 		cpu.pc += 2
 	}
+}
+
+func (cpu *Intel8080) _JMP() {
+	lb := uint16(cpu.memory[cpu.pc])
+	hb := uint16(cpu.memory[cpu.pc+1])
+
+	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) _CALL() {
+	ret := cpu.pc + 2
+	cpu.memory[cpu.sp-1] = uint8((ret >> 8) & 0xff)
+	cpu.memory[cpu.sp-2] = uint8(ret & 0xff)
+	cpu.sp -= 2
+
+	lb, hb := uint16(cpu.memory[cpu.pc]), uint16(cpu.memory[cpu.pc+1])
+	cpu.pc = (hb << 8) | lb
 }
