@@ -112,10 +112,9 @@ func Fuzz_INR_B_Flags(f *testing.F) {
 		{value: 0x7F, flagName: "Sign", flagMask: Sign},
 	}
 
-	f.Add(0)
-	f.Add(1)
-	f.Add(2)
-	f.Add(3)
+	for i := range tData {
+		f.Add(i)
+	}
 
 	f.Fuzz(func(t *testing.T, i int) {
 		d := tData[i]
@@ -177,10 +176,9 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 		{value: 0x81, flagName: "Sign", flagMask: Sign},
 	}
 
-	f.Add(0)
-	f.Add(1)
-	f.Add(2)
-	f.Add(3)
+	for i := range tData {
+		f.Add(i)
+	}
 
 	f.Fuzz(func(t *testing.T, i int) {
 		d := tData[i]
