@@ -47,7 +47,7 @@ func NewIntel8080() *Intel8080 {
 		0x0c: {cpu._NI, "Not Impl", 0},
 		0x0d: {cpu._NI, "Not Impl", 0},
 		0x0e: {cpu._NI, "Not Impl", 0},
-		0x0f: {cpu._NI, "Not Impl", 0},
+		0x0f: {cpu._RRC, "RRC", 1},
 
 		0x10: {cpu._NI, "Not Impl", 0},
 		0x11: {cpu._NI, "Not Impl", 0},
@@ -64,7 +64,7 @@ func NewIntel8080() *Intel8080 {
 		0x1c: {cpu._NI, "Not Impl", 0},
 		0x1d: {cpu._NI, "Not Impl", 0},
 		0x1e: {cpu._NI, "Not Impl", 0},
-		0x1f: {cpu._NI, "Not Impl", 0},
+		0x1f: {cpu._RAR, "RAR", 1},
 
 		0x20: {cpu._NI, "Not Impl", 0},
 		0x21: {cpu._NI, "Not Impl", 0},
@@ -390,6 +390,23 @@ func (cpu *Intel8080) _DAD_B() {
 	cpu.l = byte(result & 0xFF)
 
 	cpu.flags.Set(Carry, result > 0xFFFF)
+}
+
+func (cpu *Intel8080) _RRC() {
+	lb := cpu.a & 0x1
+	cpu.flags.Set(Carry, lb == 1)
+	cpu.a = (cpu.a >> 1) | (lb << 7)
+}
+
+func (cpu *Intel8080) _RAR() {
+	var c uint8 = 0
+	if cpu.flags.Get(Carry) {
+		c = 1
+	}
+
+	lb := cpu.a & 0x1
+	cpu.flags.Set(Carry, lb == 1)
+	cpu.a = (cpu.a >> 1) | (c << 7)
 }
 
 func (cpu *Intel8080) _CMA() {

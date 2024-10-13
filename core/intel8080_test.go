@@ -257,6 +257,65 @@ func Test_DAD_B_Flags(t *testing.T) {
 	}
 }
 
+func Test_RRC(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x0f, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.a = 0xf
+
+	cpu.Run()
+
+	if cpu.a != 0x87 {
+		t.Errorf("RRC did not rotate the A register correctly")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("RRC did not set the Carry flag correctly")
+	}
+}
+
+func Test_RARWithCarryFlagSet(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x1f, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.flags.Set(Carry, true)
+	cpu.a = 0xf
+
+	cpu.Run()
+
+	if cpu.a != 0x87 {
+		t.Errorf("RRC did not rotate the A register correctly")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("RRC did not set the Carry flag correctly")
+	}
+}
+
+func Test_RARWithCarryFlagUnset(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x1f, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.flags.Set(Carry, false)
+	cpu.a = 0xf
+
+	cpu.Run()
+
+	if cpu.a != 0x7 {
+		t.Errorf("RRC did not rotate the A register correctly")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("RRC did not set the Carry flag correctly")
+	}
+}
+
 func Test_CMA(t *testing.T) {
 	cpu := NewIntel8080()
 
