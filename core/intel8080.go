@@ -301,7 +301,7 @@ func NewIntel8080() *Intel8080 {
 		0xfb: {cpu._NI, "Not Impl", 0},
 		0xfc: {cpu._NI, "Not Impl", 0},
 		0xfd: {cpu._NI, "Not Impl", 0},
-		0xfe: {cpu._NI, "Not Impl", 0},
+		0xfe: {cpu._CPI, "CPI", 2},
 		0xff: {cpu._NI, "Not Impl", 0},
 	}
 
@@ -458,5 +458,18 @@ func (cpu *Intel8080) _ANI() {
 	cpu.flags.Set(Parity, hasParity(x))
 
 	cpu.a = x
+	cpu.pc++
+}
+
+func (cpu *Intel8080) _CPI() {
+	value := cpu.memory[cpu.pc]
+	result := cpu.a - value
+
+	cpu.flags.Set(Zero, result == 0)
+	cpu.flags.Set(Sign, result&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(result))
+	cpu.flags.Set(Carry, cpu.a < value)
+	cpu.flags.Set(AuxCarry, (cpu.a&0xf) < (value&0xf))
+
 	cpu.pc++
 }

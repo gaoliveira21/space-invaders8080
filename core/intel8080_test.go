@@ -145,27 +145,27 @@ func Test_DCR_B(t *testing.T) {
 	cpu.Run()
 
 	if cpu.b != 0x04 {
-		t.Errorf("INR B did not increment the program correctly")
+		t.Errorf("DCR B did not increment the program correctly")
 	}
 
 	if cpu.flags.Get(Parity) {
-		t.Errorf("INR B did not set the parity flag correctly")
+		t.Errorf("DCR B did not set the parity flag correctly")
 	}
 
 	if cpu.flags.Get(Zero) {
-		t.Errorf("INR B did not set the zero flag correctly")
+		t.Errorf("DCR B did not set the zero flag correctly")
 	}
 
 	if cpu.flags.Get(Sign) {
-		t.Errorf("INR B did not set the sign flag correctly")
+		t.Errorf("DCR B did not set the sign flag correctly")
 	}
 
 	if cpu.flags.Get(AuxCarry) {
-		t.Errorf("INR B did not set the auxiliary carry flag correctly")
+		t.Errorf("DCR B did not set the auxiliary carry flag correctly")
 	}
 
 	if cpu.flags.Get(Carry) {
-		t.Errorf("INR B did not set the carry flag correctly")
+		t.Errorf("DCR B did not set the carry flag correctly")
 	}
 }
 
@@ -194,7 +194,7 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 		cpu.Run()
 
 		if !cpu.flags.Get(d.flagMask) {
-			t.Errorf("INR B did not set the %s flag correctly", d.flagName)
+			t.Errorf("DCR B did not set the %s flag correctly", d.flagName)
 		}
 	})
 }
@@ -447,4 +447,38 @@ func Test_ANI(t *testing.T) {
 	if !cpu.flags.Get(Parity) {
 		t.Errorf("ANI did not set Parity flag correctly")
 	}
+}
+
+func Fuzz_CPI_Flags(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+		{value: 0x00, flagName: "Carry", flagMask: Carry},
+		{value: 0x00, flagName: "AuxCarry", flagMask: AuxCarry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := NewIntel8080()
+
+		program := []byte{0xfe, 0x01, 0x01}
+		cpu.LoadProgram(program)
+
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CPI did not set the %s flag correctly", d.flagName)
+		}
+
+		if cpu.pc != 2 {
+			t.Errorf("CPI did not increment PC")
+		}
+	})
 }
