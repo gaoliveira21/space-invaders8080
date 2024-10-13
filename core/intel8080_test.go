@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -243,8 +242,6 @@ func Test_DAD_B_Flags(t *testing.T) {
 	cpu.b = 0x44
 	cpu.c = 0x55
 
-	fmt.Println(78951)
-
 	cpu.Run()
 
 	if !cpu.flags.Get(Carry) {
@@ -257,6 +254,21 @@ func Test_DAD_B_Flags(t *testing.T) {
 
 	if cpu.h != 0x34 {
 		t.Errorf("DAD B did not set the H register correctly")
+	}
+}
+
+func Test_CMA(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x2f, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.a = 0xdd
+
+	cpu.Run()
+
+	if cpu.a != 0x22 {
+		t.Errorf("CMA did not set the A register correctly")
 	}
 }
 
@@ -342,5 +354,38 @@ func TestRET(t *testing.T) {
 
 	if cpu.pc != 0x1234 {
 		t.Errorf("CALL dit not set PC correctly")
+	}
+}
+
+func Test_ANI(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0xe6, 0x05, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.flags.Set(Carry, true)
+	cpu.flags.Set(AuxCarry, true)
+	cpu.a = 0x10
+
+	cpu.Run()
+
+	if cpu.a != 0x00 {
+		t.Errorf("ANI did not set the A register correctly")
+	}
+
+	if cpu.flags.Get(Carry) || cpu.flags.Get(AuxCarry) {
+		t.Errorf("ANI did not clear Carry and AuxCarry flags")
+	}
+
+	if !cpu.flags.Get(Zero) {
+		t.Errorf("ANI did not set Zero flag correctly")
+	}
+
+	if cpu.flags.Get(Sign) {
+		t.Errorf("ANI did not set Sign flag correctly")
+	}
+
+	if !cpu.flags.Get(Parity) {
+		t.Errorf("ANI did not set Parity flag correctly")
 	}
 }

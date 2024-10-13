@@ -81,7 +81,7 @@ func NewIntel8080() *Intel8080 {
 		0x2c: {cpu._NI, "Not Impl", 0},
 		0x2d: {cpu._NI, "Not Impl", 0},
 		0x2e: {cpu._NI, "Not Impl", 0},
-		0x2f: {cpu._NI, "Not Impl", 0},
+		0x2f: {cpu._CMA, "CMA", 1},
 
 		0x30: {cpu._NI, "Not Impl", 0},
 		0x31: {cpu._NI, "Not Impl", 0},
@@ -276,7 +276,7 @@ func NewIntel8080() *Intel8080 {
 		0xe3: {cpu._NI, "Not Impl", 0},
 		0xe4: {cpu._NI, "Not Impl", 0},
 		0xe5: {cpu._NI, "Not Impl", 0},
-		0xe6: {cpu._NI, "Not Impl", 0},
+		0xe6: {cpu._ANI, "ANI", 2},
 		0xe7: {cpu._NI, "Not Impl", 0},
 		0xe8: {cpu._NI, "Not Impl", 0},
 		0xe9: {cpu._NI, "Not Impl", 0},
@@ -392,6 +392,10 @@ func (cpu *Intel8080) _DAD_B() {
 	cpu.flags.Set(Carry, result > 0xFFFF)
 }
 
+func (cpu *Intel8080) _CMA() {
+	cpu.a = ^cpu.a
+}
+
 func (cpu *Intel8080) _JNZ() {
 	if cpu.flags.Get(Zero) {
 		lb := uint16(cpu.memory[cpu.pc])
@@ -424,4 +428,18 @@ func (cpu *Intel8080) _RET() {
 	lb, hb := uint16(cpu.memory[cpu.sp]), uint16(cpu.memory[cpu.sp+1])
 	cpu.sp += 2
 	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) _ANI() {
+	x := cpu.a & cpu.memory[cpu.pc]
+
+	cpu.flags.Set(Carry, false)
+	cpu.flags.Set(AuxCarry, false)
+
+	cpu.flags.Set(Zero, x == 0)
+	cpu.flags.Set(Sign, x&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(x))
+
+	cpu.a = x
+	cpu.pc++
 }
