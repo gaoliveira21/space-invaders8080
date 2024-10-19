@@ -271,6 +271,22 @@ func Test_LDAX_B(t *testing.T) {
 	}
 }
 
+func Test_DCX_B(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x0b, 0x01}
+	cpu.LoadProgram(program)
+
+	cpu.b = 0x55
+	cpu.c = 0x00
+
+	cpu.Run()
+
+	if cpu.b != 0x54 || cpu.c != 0xFF {
+		t.Errorf("DCX B did not set the BC register pair correctly")
+	}
+}
+
 func Test_RRC(t *testing.T) {
 	cpu := NewIntel8080()
 

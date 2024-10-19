@@ -43,7 +43,7 @@ func NewIntel8080() *Intel8080 {
 		0x08: {cpu._NOP, "*NOP", 1},
 		0x09: {cpu._DAD_B, "DAD B", 1},
 		0x0a: {cpu._LDAX_B, "LDAX B", 1},
-		0x0b: {cpu._NI, "Not Impl", 0},
+		0x0b: {cpu._DCX_B, "DCX B", 1},
 		0x0c: {cpu._NI, "Not Impl", 0},
 		0x0d: {cpu._NI, "Not Impl", 0},
 		0x0e: {cpu._NI, "Not Impl", 0},
@@ -395,6 +395,12 @@ func (cpu *Intel8080) _DAD_B() {
 func (cpu *Intel8080) _LDAX_B() {
 	bc := (uint16(cpu.b) << 8) | uint16(cpu.c)
 	cpu.a = cpu.memory[bc]
+}
+
+func (cpu *Intel8080) _DCX_B() {
+	result := (uint16(cpu.b) << 8) | uint16(cpu.c)
+	result--
+	cpu.b, cpu.c = uint8(result>>8), uint8(result&0xFF)
 }
 
 func (cpu *Intel8080) _RRC() {
