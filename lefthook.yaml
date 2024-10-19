@@ -1,0 +1,4 @@
+pre-push:
+  commands:
+    tests:
+      run: go test ./... -count=1 -cover

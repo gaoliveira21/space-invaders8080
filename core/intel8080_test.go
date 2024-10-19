@@ -10,11 +10,16 @@ type flagDataTest struct {
 	flagMask byte
 }
 
-func TestLoadProgram(t *testing.T) {
+func createCPUWithProgramLoaded(p []byte) *Intel8080 {
 	cpu := NewIntel8080()
+	cpu.LoadProgram(p)
 
+	return cpu
+}
+
+func TestLoadProgram(t *testing.T) {
 	program := []byte{0x00, 0x01, 0x02, 0x03}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded(program)
 
 	for i, v := range program {
 		if cpu.memory[i] != v {
@@ -24,10 +29,7 @@ func TestLoadProgram(t *testing.T) {
 }
 
 func Test_LXI_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x01, 0x02, 0x03}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded([]byte{0x01, 0x02, 0x03})
 
 	cpu.Run()
 
@@ -37,10 +39,7 @@ func Test_LXI_B(t *testing.T) {
 }
 
 func Test_STAX_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x02, 0x01}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded([]byte{0x02, 0x01})
 
 	cpu.b = 0x03
 	cpu.c = 0x01
@@ -54,10 +53,7 @@ func Test_STAX_B(t *testing.T) {
 }
 
 func Test_INX_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x03, 0x01}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded([]byte{0x03, 0x01})
 
 	cpu.b = 0x03
 	cpu.c = 0x01
@@ -70,11 +66,7 @@ func Test_INX_B(t *testing.T) {
 }
 
 func Test_INR_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x04, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x04, 0x01})
 	cpu.b = 0x03
 
 	cpu.Run()
@@ -118,10 +110,7 @@ func Fuzz_INR_B_Flags(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, i int) {
 		d := tData[i]
-		cpu := NewIntel8080()
-
-		program := []byte{0x04, 0x01}
-		cpu.LoadProgram(program)
+		cpu := createCPUWithProgramLoaded([]byte{0x04, 0x01})
 
 		cpu.b = d.value
 
@@ -134,11 +123,7 @@ func Fuzz_INR_B_Flags(f *testing.F) {
 }
 
 func Test_DCR_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x05, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x05, 0x01})
 	cpu.b = 0x05
 
 	cpu.Run()
@@ -182,10 +167,7 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, i int) {
 		d := tData[i]
-		cpu := NewIntel8080()
-
-		program := []byte{0x05, 0x01}
-		cpu.LoadProgram(program)
+		cpu := createCPUWithProgramLoaded([]byte{0x05, 0x01})
 
 		cpu.b = d.value
 
@@ -198,10 +180,7 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 }
 
 func Test_MVI_B_Flags(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x06, 0x42}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded([]byte{0x06, 0x42})
 
 	cpu.Run()
 
@@ -211,11 +190,7 @@ func Test_MVI_B_Flags(t *testing.T) {
 }
 
 func Test_RLC_Flags(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x07, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x07, 0x01})
 	cpu.a = 0x80
 
 	cpu.Run()
@@ -230,11 +205,7 @@ func Test_RLC_Flags(t *testing.T) {
 }
 
 func Test_DAD_B_Flags(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x09, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x09, 0x01})
 	cpu.h = 0xF0
 	cpu.l = 0x12
 	cpu.b = 0x44
@@ -256,11 +227,7 @@ func Test_DAD_B_Flags(t *testing.T) {
 }
 
 func Test_LDAX_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x0a, 0x01, 0x01, 0x01, 0x01, 0x99}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x0a, 0x01, 0x01, 0x01, 0x01, 0x99})
 	cpu.b = 0x00
 	cpu.c = 0x05
 
@@ -272,11 +239,7 @@ func Test_LDAX_B(t *testing.T) {
 }
 
 func Test_DCX_B(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x0b, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x0b, 0x01})
 	cpu.b = 0x55
 	cpu.c = 0x00
 
@@ -288,11 +251,7 @@ func Test_DCX_B(t *testing.T) {
 }
 
 func Test_RRC(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x0f, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x0f, 0x01})
 	cpu.a = 0xf
 
 	cpu.Run()
@@ -307,11 +266,7 @@ func Test_RRC(t *testing.T) {
 }
 
 func Test_RARWithCarryFlagSet(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x1f, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x1f, 0x01})
 	cpu.flags.Set(Carry, true)
 	cpu.a = 0xf
 
@@ -327,11 +282,7 @@ func Test_RARWithCarryFlagSet(t *testing.T) {
 }
 
 func Test_RARWithCarryFlagUnset(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x1f, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x1f, 0x01})
 	cpu.flags.Set(Carry, false)
 	cpu.a = 0xf
 
@@ -347,11 +298,7 @@ func Test_RARWithCarryFlagUnset(t *testing.T) {
 }
 
 func Test_CMA(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0x2f, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0x2f, 0x01})
 	cpu.a = 0xdd
 
 	cpu.Run()
@@ -362,11 +309,7 @@ func Test_CMA(t *testing.T) {
 }
 
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xc2, 0x88, 0xff}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)
 
 	cpu.Run()
@@ -377,11 +320,7 @@ func Test_JNZ_ZeroFlagSet(t *testing.T) {
 }
 
 func Test_JNZ_ZeroFlagUnset(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xc2, 0x88, 0xff, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff, 0x01})
 	cpu.flags.Set(Zero, false)
 
 	cpu.Run()
@@ -392,10 +331,7 @@ func Test_JNZ_ZeroFlagUnset(t *testing.T) {
 }
 
 func Test_JMP(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xc3, 0x96, 0xed}
-	cpu.LoadProgram(program)
+	cpu := createCPUWithProgramLoaded([]byte{0xc3, 0x96, 0xed})
 
 	cpu.Run()
 
@@ -405,11 +341,7 @@ func Test_JMP(t *testing.T) {
 }
 
 func TestCALL(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xcd, 0x34, 0x12, 0x09, 0x00, 0x00, 0x00}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0xcd, 0x34, 0x12, 0x09, 0x00, 0x00, 0x00})
 	cpu.sp = 6
 
 	cpu.Run()
@@ -428,11 +360,7 @@ func TestCALL(t *testing.T) {
 }
 
 func TestRET(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xc9, 0x34, 0x12, 0x00}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0xc9, 0x34, 0x12, 0x00})
 	cpu.sp = 1
 
 	cpu.Run()
@@ -447,11 +375,7 @@ func TestRET(t *testing.T) {
 }
 
 func Test_ANI(t *testing.T) {
-	cpu := NewIntel8080()
-
-	program := []byte{0xe6, 0x05, 0x01}
-	cpu.LoadProgram(program)
-
+	cpu := createCPUWithProgramLoaded([]byte{0xe6, 0x05, 0x01})
 	cpu.flags.Set(Carry, true)
 	cpu.flags.Set(AuxCarry, true)
 	cpu.a = 0x10
@@ -494,11 +418,7 @@ func Fuzz_CPI_Flags(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, i int) {
 		d := tData[i]
-		cpu := NewIntel8080()
-
-		program := []byte{0xfe, 0x01, 0x01}
-		cpu.LoadProgram(program)
-
+		cpu := createCPUWithProgramLoaded([]byte{0xfe, 0x01, 0x01})
 		cpu.a = d.value
 
 		cpu.Run()
