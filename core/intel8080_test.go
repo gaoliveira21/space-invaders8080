@@ -255,6 +255,22 @@ func Test_DAD_B_Flags(t *testing.T) {
 	}
 }
 
+func Test_LDAX_B(t *testing.T) {
+	cpu := NewIntel8080()
+
+	program := []byte{0x0a, 0x01, 0x01, 0x01, 0x01, 0x99}
+	cpu.LoadProgram(program)
+
+	cpu.b = 0x00
+	cpu.c = 0x05
+
+	cpu.Run()
+
+	if cpu.a != 0x99 {
+		t.Errorf("LDAX B did not set the A register correctly")
+	}
+}
+
 func Test_RRC(t *testing.T) {
 	cpu := NewIntel8080()
 
