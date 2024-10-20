@@ -1,6 +1,10 @@
 package core
 
-import "math/bits"
+import (
+	"math/bits"
+
+	"github.com/gaoliveira21/intel8080-space-invaders/debug"
+)
 
 type Intel8080Instruction struct {
 	operation func()
@@ -9,6 +13,8 @@ type Intel8080Instruction struct {
 }
 
 type Intel8080 struct {
+	debugger *debug.Debugger
+
 	// Registers
 	a     byte
 	b     byte
@@ -26,9 +32,10 @@ type Intel8080 struct {
 	instructions [256]*Intel8080Instruction
 }
 
-func NewIntel8080() *Intel8080 {
+func NewIntel8080(d *debug.Debugger) *Intel8080 {
 	cpu := &Intel8080{
-		flags: &intel8080Flags{},
+		debugger: d,
+		flags:    &intel8080Flags{},
 	}
 
 	cpu.instructions = [256]*Intel8080Instruction{
@@ -46,10 +53,10 @@ func NewIntel8080() *Intel8080 {
 		0x0b: {cpu._DCX_B, "DCX B", 1},
 		0x0c: {cpu._INR_C, "INR C", 1},
 		0x0d: {cpu._DCR_C, "DCR C", 1},
-		0x0e: {cpu._NI, "Not Impl", 0},
+		0x0e: {cpu._MVI_C, "MVI C", 2},
 		0x0f: {cpu._RRC, "RRC", 1},
 
-		0x10: {cpu._NI, "Not Impl", 0},
+		0x10: {cpu._NOP, "*NOP", 1},
 		0x11: {cpu._NI, "Not Impl", 0},
 		0x12: {cpu._NI, "Not Impl", 0},
 		0x13: {cpu._NI, "Not Impl", 0},
@@ -310,6 +317,10 @@ func NewIntel8080() *Intel8080 {
 
 func (cpu *Intel8080) LoadProgram(program []byte) {
 	copy(cpu.memory[:], program)
+
+	if cpu.debugger != nil {
+		cpu.debugger.DumpMemory(cpu.memory[:])
+	}
 }
 
 func (cpu *Intel8080) Run() {
@@ -419,6 +430,11 @@ func (cpu *Intel8080) _DCR_C() {
 	cpu.flags.Set(Sign, cpu.c&0x80 != 0)
 	cpu.flags.Set(AuxCarry, cpu.c&0x0F == 0)
 	cpu.flags.Set(Parity, hasParity(cpu.c))
+}
+
+func (cpu *Intel8080) _MVI_C() {
+	cpu.c = cpu.memory[cpu.pc]
+	cpu.pc++
 }
 
 func (cpu *Intel8080) _RRC() {

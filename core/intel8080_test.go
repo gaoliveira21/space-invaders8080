@@ -11,7 +11,7 @@ type flagDataTest struct {
 }
 
 func createCPUWithProgramLoaded(p []byte) *Intel8080 {
-	cpu := NewIntel8080()
+	cpu := NewIntel8080(nil)
 	cpu.LoadProgram(p)
 
 	return cpu
@@ -139,7 +139,7 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 	})
 }
 
-func Test_MVI_B_Flags(t *testing.T) {
+func Test_MVI_B(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x06, 0x42})
 
 	cpu.Run()
@@ -282,6 +282,16 @@ func Fuzz_DCR_C_Flags(f *testing.F) {
 			t.Errorf("DCR C did not set the %s flag correctly", d.flagName)
 		}
 	})
+}
+
+func Test_MVI_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x0e, 0x42})
+
+	cpu.Run()
+
+	if cpu.c != 0x42 {
+		t.Errorf("MVI C did not load the correct value to register")
+	}
 }
 
 func Test_RRC(t *testing.T) {

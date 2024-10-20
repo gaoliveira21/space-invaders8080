@@ -8,7 +8,7 @@ var Reset = "\033[0m"
 var Green = "\033[32m"
 var Cyan = "\033[36m"
 
-func Disassemble8080(rom []byte) {
+func (d *Debugger) Disassemble8080(rom []byte) {
 	fmt.Println("########## 8080 Opcode ##########")
 
 L:
