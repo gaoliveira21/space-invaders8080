@@ -57,7 +57,7 @@ func NewIntel8080(d *debug.Debugger) *Intel8080 {
 		0x0f: {cpu._RRC, "RRC", 1},
 
 		0x10: {cpu._NOP, "*NOP", 1},
-		0x11: {cpu._NI, "Not Impl", 0},
+		0x11: {cpu._LXI_D, "LXI D", 3},
 		0x12: {cpu._NI, "Not Impl", 0},
 		0x13: {cpu._NI, "Not Impl", 0},
 		0x14: {cpu._NI, "Not Impl", 0},
@@ -441,6 +441,12 @@ func (cpu *Intel8080) _RRC() {
 	lb := cpu.a & 0x1
 	cpu.flags.Set(Carry, lb == 1)
 	cpu.a = (cpu.a >> 1) | (lb << 7)
+}
+
+func (cpu *Intel8080) _LXI_D() {
+	cpu.e = cpu.memory[cpu.pc]
+	cpu.d = cpu.memory[cpu.pc+1]
+	cpu.pc += 2
 }
 
 func (cpu *Intel8080) _RAR() {

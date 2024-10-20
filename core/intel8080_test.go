@@ -34,7 +34,7 @@ func Test_LXI_B(t *testing.T) {
 	cpu.Run()
 
 	if cpu.c != 0x02 || cpu.b != 0x03 {
-		t.Errorf("LXI B did not load the program correctly")
+		t.Errorf("LXI B did not set registers correctly")
 	}
 }
 
@@ -306,6 +306,16 @@ func Test_RRC(t *testing.T) {
 
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RRC did not set the Carry flag correctly")
+	}
+}
+
+func Test_LXI_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x11, 0x02, 0x03})
+
+	cpu.Run()
+
+	if cpu.e != 0x02 || cpu.d != 0x03 {
+		t.Errorf("LXI D did not set registers correctly")
 	}
 }
 
