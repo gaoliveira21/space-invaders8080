@@ -74,26 +74,6 @@ func Test_INR_B(t *testing.T) {
 	if cpu.b != 0x04 {
 		t.Errorf("INR B did not increment the program correctly")
 	}
-
-	if cpu.flags.Get(Parity) {
-		t.Errorf("INR B did not set the parity flag correctly")
-	}
-
-	if cpu.flags.Get(Zero) {
-		t.Errorf("INR B did not set the zero flag correctly")
-	}
-
-	if cpu.flags.Get(Sign) {
-		t.Errorf("INR B did not set the sign flag correctly")
-	}
-
-	if cpu.flags.Get(AuxCarry) {
-		t.Errorf("INR B did not set the auxiliary carry flag correctly")
-	}
-
-	if cpu.flags.Get(Carry) {
-		t.Errorf("INR B did not set the carry flag correctly")
-	}
 }
 
 func Fuzz_INR_B_Flags(f *testing.F) {
@@ -130,26 +110,6 @@ func Test_DCR_B(t *testing.T) {
 
 	if cpu.b != 0x04 {
 		t.Errorf("DCR B did not increment the program correctly")
-	}
-
-	if cpu.flags.Get(Parity) {
-		t.Errorf("DCR B did not set the parity flag correctly")
-	}
-
-	if cpu.flags.Get(Zero) {
-		t.Errorf("DCR B did not set the zero flag correctly")
-	}
-
-	if cpu.flags.Get(Sign) {
-		t.Errorf("DCR B did not set the sign flag correctly")
-	}
-
-	if cpu.flags.Get(AuxCarry) {
-		t.Errorf("DCR B did not set the auxiliary carry flag correctly")
-	}
-
-	if cpu.flags.Get(Carry) {
-		t.Errorf("DCR B did not set the carry flag correctly")
 	}
 }
 
@@ -248,6 +208,80 @@ func Test_DCX_B(t *testing.T) {
 	if cpu.b != 0x54 || cpu.c != 0xFF {
 		t.Errorf("DCX B did not set the BC register pair correctly")
 	}
+}
+
+func Test_INR_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x0c, 0x01})
+	cpu.c = 0x03
+
+	cpu.Run()
+
+	if cpu.c != 0x04 {
+		t.Errorf("INR C did not increment the program correctly")
+	}
+}
+
+func Fuzz_INR_C_Flags(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA9, flagName: "Parity", flagMask: Parity},
+		{value: 0xFF, flagName: "Zero", flagMask: Zero},
+		{value: 0x2F, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7F, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x0c, 0x01})
+
+		cpu.c = d.value
+
+		cpu.Run()
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("INR C did not set the %s flag correctly", d.flagName)
+		}
+	})
+}
+
+func Test_DCR_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x0d, 0x01})
+	cpu.c = 0x05
+
+	cpu.Run()
+
+	if cpu.c != 0x04 {
+		t.Errorf("DCR C did not increment the program correctly")
+	}
+}
+
+func Fuzz_DCR_C_Flags(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x31, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x0d, 0x01})
+
+		cpu.c = d.value
+
+		cpu.Run()
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("DCR C did not set the %s flag correctly", d.flagName)
+		}
+	})
 }
 
 func Test_RRC(t *testing.T) {

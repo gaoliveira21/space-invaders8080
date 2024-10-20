@@ -44,8 +44,8 @@ func NewIntel8080() *Intel8080 {
 		0x09: {cpu._DAD_B, "DAD B", 1},
 		0x0a: {cpu._LDAX_B, "LDAX B", 1},
 		0x0b: {cpu._DCX_B, "DCX B", 1},
-		0x0c: {cpu._NI, "Not Impl", 0},
-		0x0d: {cpu._NI, "Not Impl", 0},
+		0x0c: {cpu._INR_C, "INR C", 1},
+		0x0d: {cpu._DCR_C, "DCR C", 1},
 		0x0e: {cpu._NI, "Not Impl", 0},
 		0x0f: {cpu._RRC, "RRC", 1},
 
@@ -401,6 +401,24 @@ func (cpu *Intel8080) _DCX_B() {
 	result := (uint16(cpu.b) << 8) | uint16(cpu.c)
 	result--
 	cpu.b, cpu.c = uint8(result>>8), uint8(result&0xFF)
+}
+
+func (cpu *Intel8080) _INR_C() {
+	cpu.c++
+
+	cpu.flags.Set(Zero, cpu.c == 0)
+	cpu.flags.Set(Sign, cpu.c&0x80 != 0)
+	cpu.flags.Set(AuxCarry, cpu.c&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(cpu.c))
+}
+
+func (cpu *Intel8080) _DCR_C() {
+	cpu.c--
+
+	cpu.flags.Set(Zero, cpu.c == 0)
+	cpu.flags.Set(Sign, cpu.c&0x80 != 0)
+	cpu.flags.Set(AuxCarry, cpu.c&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(cpu.c))
 }
 
 func (cpu *Intel8080) _RRC() {
