@@ -123,7 +123,7 @@ func Test_DCR_B(t *testing.T) {
 	cpu.Run()
 
 	if cpu.b != 0x04 {
-		t.Errorf("DCR B did not increment the program correctly")
+		t.Errorf("DCR B did not decrement B register correctly")
 	}
 
 	assertCycles(t, cpu, 5)
@@ -282,7 +282,7 @@ func Test_DCR_C(t *testing.T) {
 	cpu.Run()
 
 	if cpu.c != 0x04 {
-		t.Errorf("DCR C did not increment the program correctly")
+		t.Errorf("DCR C did not decrement C register correctly")
 	}
 
 	assertCycles(t, cpu, 5)
@@ -371,6 +371,97 @@ func Test_STAX_D(t *testing.T) {
 	assertCycles(t, cpu, 7)
 }
 
+func Test_INX_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x13, 0x01})
+
+	cpu.d = 0x03
+	cpu.e = 0x01
+
+	cpu.Run()
+
+	if cpu.e != 0x02 || cpu.d != 0x03 {
+		t.Errorf("INX D did not increment the program correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Fuzz_INR_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA9, flagName: "Parity", flagMask: Parity},
+		{value: 0xFF, flagName: "Zero", flagMask: Zero},
+		{value: 0x2F, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7F, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x14, 0x01})
+
+		cpu.d = d.value
+
+		cpu.Run()
+
+		if cpu.d != d.value+1 {
+			t.Errorf("INR D did not increment D register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("INR D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Fuzz_DCR_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x31, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x15, 0x01})
+
+		cpu.d = d.value
+
+		cpu.Run()
+
+		if cpu.d != d.value-1 {
+			t.Errorf("DCR D did not decrement D register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("DCR D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Test_MVI_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x16, 0x42})
+
+	cpu.Run()
+
+	if cpu.d != 0x42 {
+		t.Errorf("MVI D did not load the correct value to register")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
 func Test_RARWithCarryFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x1f, 0x01})
 	cpu.flags.Set(Carry, true)
@@ -387,6 +478,170 @@ func Test_RARWithCarryFlagSet(t *testing.T) {
 	}
 
 	assertCycles(t, cpu, 4)
+}
+
+func Test_RALWithCarryFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x17, 0x01})
+	cpu.flags.Set(Carry, false)
+	cpu.a = 0x8F
+
+	cpu.Run()
+
+	if cpu.a != 0x1E {
+		t.Errorf("RAL did not rotate the A register correctly")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("RAL did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_RALWithCarryFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x17, 0x01})
+	cpu.flags.Set(Carry, true)
+	cpu.a = 0xf
+
+	cpu.Run()
+
+	if cpu.a != 0x1F {
+		t.Errorf("RAL did not rotate the A register correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("RAL did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_DAD_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x19, 0x01})
+	cpu.h = 0xF0
+	cpu.l = 0x12
+	cpu.d = 0x44
+	cpu.e = 0x55
+
+	cpu.Run()
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("DAD D did not set the carry flag correctly")
+	}
+
+	if cpu.l != 0x67 {
+		t.Errorf("DAD D did not set the L register correctly")
+	}
+
+	if cpu.h != 0x34 {
+		t.Errorf("DAD D did not set the H register correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_LDAX_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x1a, 0x01, 0x01, 0x01, 0x01, 0x99})
+	cpu.d = 0x00
+	cpu.e = 0x05
+
+	cpu.Run()
+
+	if cpu.a != 0x99 {
+		t.Errorf("LDAX D did not set the A register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_DCX_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x1b, 0x01})
+	cpu.d = 0x55
+	cpu.e = 0x00
+
+	cpu.Run()
+
+	if cpu.d != 0x54 || cpu.e != 0xFF {
+		t.Errorf("DCX D did not set the DE register pair correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Fuzz_INR_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA9, flagName: "Parity", flagMask: Parity},
+		{value: 0xFF, flagName: "Zero", flagMask: Zero},
+		{value: 0x2F, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7F, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x1c, 0x01})
+
+		cpu.e = d.value
+
+		cpu.Run()
+
+		if cpu.e != d.value+1 {
+			t.Errorf("INR E did not increment E register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("INR E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Fuzz_DCR_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x31, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x1d, 0x01})
+
+		cpu.e = d.value
+
+		cpu.Run()
+
+		if cpu.e != d.value-1 {
+			t.Errorf("DCR E did not decrement E register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("DCR E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Test_MVI_E(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x1e, 0x42})
+
+	cpu.Run()
+
+	if cpu.e != 0x42 {
+		t.Errorf("MVI E did not load the correct value to register")
+	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_RARWithCarryFlagUnset(t *testing.T) {
