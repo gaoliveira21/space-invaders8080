@@ -17,6 +17,12 @@ func createCPUWithProgramLoaded(p []byte) *Intel8080 {
 	return cpu
 }
 
+func assertCycles(t *testing.T, cpu *Intel8080, expected uint) {
+	if cpu.cycles != expected {
+		t.Errorf("cpu cycles have not been set correctly")
+	}
+}
+
 func TestLoadProgram(t *testing.T) {
 	program := []byte{0x00, 0x01, 0x02, 0x03}
 	cpu := createCPUWithProgramLoaded(program)
@@ -36,6 +42,8 @@ func Test_LXI_B(t *testing.T) {
 	if cpu.c != 0x02 || cpu.b != 0x03 {
 		t.Errorf("LXI B did not set registers correctly")
 	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func Test_STAX_B(t *testing.T) {
@@ -50,6 +58,8 @@ func Test_STAX_B(t *testing.T) {
 	if cpu.memory[0x0301] != 0x08 {
 		t.Errorf("STAX B did not store the program correctly")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_INX_B(t *testing.T) {
@@ -63,6 +73,8 @@ func Test_INX_B(t *testing.T) {
 	if cpu.c != 0x02 || cpu.b != 0x03 {
 		t.Errorf("INX B did not increment the program correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Test_INR_B(t *testing.T) {
@@ -74,6 +86,8 @@ func Test_INR_B(t *testing.T) {
 	if cpu.b != 0x04 {
 		t.Errorf("INR B did not increment the program correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Fuzz_INR_B_Flags(f *testing.F) {
@@ -111,6 +125,8 @@ func Test_DCR_B(t *testing.T) {
 	if cpu.b != 0x04 {
 		t.Errorf("DCR B did not increment the program correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Fuzz_DCR_B_Flags(f *testing.F) {
@@ -147,9 +163,11 @@ func Test_MVI_B(t *testing.T) {
 	if cpu.b != 0x42 {
 		t.Errorf("MVI B did not load the correct value to register")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
-func Test_RLC_Flags(t *testing.T) {
+func Test_RLC(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x07, 0x01})
 	cpu.a = 0x80
 
@@ -162,9 +180,11 @@ func Test_RLC_Flags(t *testing.T) {
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RLC did not set the carry flag correctly")
 	}
+
+	assertCycles(t, cpu, 4)
 }
 
-func Test_DAD_B_Flags(t *testing.T) {
+func Test_DAD_B(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x09, 0x01})
 	cpu.h = 0xF0
 	cpu.l = 0x12
@@ -184,6 +204,8 @@ func Test_DAD_B_Flags(t *testing.T) {
 	if cpu.h != 0x34 {
 		t.Errorf("DAD B did not set the H register correctly")
 	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func Test_LDAX_B(t *testing.T) {
@@ -196,6 +218,8 @@ func Test_LDAX_B(t *testing.T) {
 	if cpu.a != 0x99 {
 		t.Errorf("LDAX B did not set the A register correctly")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_DCX_B(t *testing.T) {
@@ -208,6 +232,8 @@ func Test_DCX_B(t *testing.T) {
 	if cpu.b != 0x54 || cpu.c != 0xFF {
 		t.Errorf("DCX B did not set the BC register pair correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Test_INR_C(t *testing.T) {
@@ -219,6 +245,8 @@ func Test_INR_C(t *testing.T) {
 	if cpu.c != 0x04 {
 		t.Errorf("INR C did not increment the program correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Fuzz_INR_C_Flags(f *testing.F) {
@@ -256,6 +284,8 @@ func Test_DCR_C(t *testing.T) {
 	if cpu.c != 0x04 {
 		t.Errorf("DCR C did not increment the program correctly")
 	}
+
+	assertCycles(t, cpu, 5)
 }
 
 func Fuzz_DCR_C_Flags(f *testing.F) {
@@ -292,6 +322,8 @@ func Test_MVI_C(t *testing.T) {
 	if cpu.c != 0x42 {
 		t.Errorf("MVI C did not load the correct value to register")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_RRC(t *testing.T) {
@@ -307,6 +339,8 @@ func Test_RRC(t *testing.T) {
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RRC did not set the Carry flag correctly")
 	}
+
+	assertCycles(t, cpu, 4)
 }
 
 func Test_LXI_D(t *testing.T) {
@@ -317,6 +351,8 @@ func Test_LXI_D(t *testing.T) {
 	if cpu.e != 0x02 || cpu.d != 0x03 {
 		t.Errorf("LXI D did not set registers correctly")
 	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func Test_STAX_D(t *testing.T) {
@@ -331,6 +367,8 @@ func Test_STAX_D(t *testing.T) {
 	if cpu.memory[0x0301] != 0x08 {
 		t.Errorf("STAX D did not store the program correctly")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_RARWithCarryFlagSet(t *testing.T) {
@@ -347,6 +385,8 @@ func Test_RARWithCarryFlagSet(t *testing.T) {
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RRC did not set the Carry flag correctly")
 	}
+
+	assertCycles(t, cpu, 4)
 }
 
 func Test_RARWithCarryFlagUnset(t *testing.T) {
@@ -374,6 +414,8 @@ func Test_CMA(t *testing.T) {
 	if cpu.a != 0x22 {
 		t.Errorf("CMA did not set the A register correctly")
 	}
+
+	assertCycles(t, cpu, 4)
 }
 
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
@@ -385,6 +427,8 @@ func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	if cpu.pc != 0xff88 {
 		t.Errorf("JNZ dit not set pc correctly")
 	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func Test_JNZ_ZeroFlagUnset(t *testing.T) {
@@ -406,6 +450,25 @@ func Test_JMP(t *testing.T) {
 	if cpu.pc != 0xed96 {
 		t.Errorf("JMP dit not set pc correctly")
 	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func TestRET(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc9, 0x34, 0x12, 0x00})
+	cpu.sp = 1
+
+	cpu.Run()
+
+	if cpu.sp != 3 {
+		t.Errorf("RET dit not set SP correctly")
+	}
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CALL dit not set PC correctly")
+	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func TestCALL(t *testing.T) {
@@ -425,21 +488,8 @@ func TestCALL(t *testing.T) {
 	if cpu.memory[cpu.sp+1] != 0x00 || cpu.memory[cpu.sp] != 0x03 {
 		t.Errorf("CALL dit not write correctly to memory")
 	}
-}
 
-func TestRET(t *testing.T) {
-	cpu := createCPUWithProgramLoaded([]byte{0xc9, 0x34, 0x12, 0x00})
-	cpu.sp = 1
-
-	cpu.Run()
-
-	if cpu.sp != 3 {
-		t.Errorf("RET dit not set SP correctly")
-	}
-
-	if cpu.pc != 0x1234 {
-		t.Errorf("CALL dit not set PC correctly")
-	}
+	assertCycles(t, cpu, 17)
 }
 
 func Test_ANI(t *testing.T) {
@@ -469,6 +519,8 @@ func Test_ANI(t *testing.T) {
 	if !cpu.flags.Get(Parity) {
 		t.Errorf("ANI did not set Parity flag correctly")
 	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Fuzz_CPI_Flags(f *testing.F) {
@@ -498,5 +550,7 @@ func Fuzz_CPI_Flags(f *testing.F) {
 		if cpu.pc != 2 {
 			t.Errorf("CPI did not increment PC")
 		}
+
+		assertCycles(t, cpu, 7)
 	})
 }
