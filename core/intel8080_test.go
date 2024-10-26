@@ -11,7 +11,7 @@ type flagDataTest struct {
 }
 
 func createCPUWithProgramLoaded(p []byte) *Intel8080 {
-	cpu := NewIntel8080(nil)
+	cpu := NewIntel8080()
 	cpu.LoadProgram(p)
 
 	return cpu

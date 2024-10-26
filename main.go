@@ -21,11 +21,12 @@ func main() {
 
 	log.Printf("%d bytes loaded\n", len(rom))
 
-	debugger := debug.NewDebugger()
-	debugger.Disassemble8080(rom)
-
-	cpu := core.NewIntel8080(debugger)
+	cpu := core.NewIntel8080()
 	cpu.LoadProgram(rom)
+
+	debugger := debug.NewDebugger(cpu)
+	debugger.Disassemble8080(rom)
+	debugger.DumpMemory()
 
 	api.Start()
 }

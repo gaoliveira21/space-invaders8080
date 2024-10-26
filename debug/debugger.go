@@ -5,13 +5,23 @@ import (
 	"os"
 )
 
-type Debugger struct{}
-
-func NewDebugger() *Debugger {
-	return &Debugger{}
+type Cpu interface {
+	GetMemory() []byte
 }
 
-func (d *Debugger) DumpMemory(mem []byte) {
+type Debugger struct {
+	cpu Cpu
+}
+
+func NewDebugger(c Cpu) *Debugger {
+	return &Debugger{
+		cpu: c,
+	}
+}
+
+func (d *Debugger) DumpMemory() {
+	mem := d.cpu.GetMemory()
+
 	if _, err := os.Stat(".dump"); os.IsNotExist(err) {
 		os.Mkdir(".dump", os.ModePerm)
 	}

@@ -2,8 +2,6 @@ package core
 
 import (
 	"math/bits"
-
-	"github.com/gaoliveira21/intel8080-space-invaders/debug"
 )
 
 type Intel8080Instruction struct {
@@ -13,8 +11,6 @@ type Intel8080Instruction struct {
 }
 
 type Intel8080 struct {
-	debugger *debug.Debugger
-
 	// Registers
 	a     byte
 	b     byte
@@ -32,10 +28,9 @@ type Intel8080 struct {
 	instructions [256]*Intel8080Instruction
 }
 
-func NewIntel8080(d *debug.Debugger) *Intel8080 {
+func NewIntel8080() *Intel8080 {
 	cpu := &Intel8080{
-		debugger: d,
-		flags:    &intel8080Flags{},
+		flags: &intel8080Flags{},
 	}
 
 	cpu.instructions = [256]*Intel8080Instruction{
@@ -315,12 +310,12 @@ func NewIntel8080(d *debug.Debugger) *Intel8080 {
 	return cpu
 }
 
+func (cpu *Intel8080) GetMemory() []byte {
+	return cpu.memory[:]
+}
+
 func (cpu *Intel8080) LoadProgram(program []byte) {
 	copy(cpu.memory[:], program)
-
-	if cpu.debugger != nil {
-		cpu.debugger.DumpMemory(cpu.memory[:])
-	}
 }
 
 func (cpu *Intel8080) Run() {
