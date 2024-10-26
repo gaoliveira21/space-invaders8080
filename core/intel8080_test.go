@@ -319,6 +319,20 @@ func Test_LXI_D(t *testing.T) {
 	}
 }
 
+func Test_STAX_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x12, 0x01})
+
+	cpu.d = 0x03
+	cpu.e = 0x01
+	cpu.a = 0x08
+
+	cpu.Run()
+
+	if cpu.memory[0x0301] != 0x08 {
+		t.Errorf("STAX D did not store the program correctly")
+	}
+}
+
 func Test_RARWithCarryFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x1f, 0x01})
 	cpu.flags.Set(Carry, true)

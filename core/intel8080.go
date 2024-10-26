@@ -53,7 +53,7 @@ func NewIntel8080() *Intel8080 {
 
 		0x10: {cpu._NOP, "*NOP", 1},
 		0x11: {cpu._LXI_D, "LXI D", 3},
-		0x12: {cpu._NI, "Not Impl", 0},
+		0x12: {cpu._STAX_D, "STAX D", 1},
 		0x13: {cpu._NI, "Not Impl", 0},
 		0x14: {cpu._NI, "Not Impl", 0},
 		0x15: {cpu._NI, "Not Impl", 0},
@@ -442,6 +442,12 @@ func (cpu *Intel8080) _LXI_D() {
 	cpu.e = cpu.memory[cpu.pc]
 	cpu.d = cpu.memory[cpu.pc+1]
 	cpu.pc += 2
+}
+
+func (cpu *Intel8080) _STAX_D() {
+	addr := uint16(cpu.d)<<8 | uint16(cpu.e)
+
+	cpu.memory[addr] = cpu.a
 }
 
 func (cpu *Intel8080) _RAR() {
