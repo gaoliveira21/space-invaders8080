@@ -43,6 +43,10 @@ func Test_LXI_B(t *testing.T) {
 		t.Errorf("LXI B did not set registers correctly")
 	}
 
+	if cpu.pc != 3 {
+		t.Errorf("LXI B did not increment PCs correctly")
+	}
+
 	assertCycles(t, cpu, 10)
 }
 
@@ -77,20 +81,7 @@ func Test_INX_B(t *testing.T) {
 	assertCycles(t, cpu, 5)
 }
 
-func Test_INR_B(t *testing.T) {
-	cpu := createCPUWithProgramLoaded([]byte{0x04, 0x01})
-	cpu.b = 0x03
-
-	cpu.Run()
-
-	if cpu.b != 0x04 {
-		t.Errorf("INR B did not increment the program correctly")
-	}
-
-	assertCycles(t, cpu, 5)
-}
-
-func Fuzz_INR_B_Flags(f *testing.F) {
+func Fuzz_INR_B(f *testing.F) {
 	tData := []flagDataTest{
 		{value: 0xA9, flagName: "Parity", flagMask: Parity},
 		{value: 0xFF, flagName: "Zero", flagMask: Zero},
@@ -110,26 +101,19 @@ func Fuzz_INR_B_Flags(f *testing.F) {
 
 		cpu.Run()
 
+		if cpu.b != d.value+1 {
+			t.Errorf("INR B did not increment the program correctly")
+		}
+
 		if !cpu.flags.Get(d.flagMask) {
 			t.Errorf("INR B did not set the %s flag correctly", d.flagName)
 		}
+
+		assertCycles(t, cpu, 5)
 	})
 }
 
-func Test_DCR_B(t *testing.T) {
-	cpu := createCPUWithProgramLoaded([]byte{0x05, 0x01})
-	cpu.b = 0x05
-
-	cpu.Run()
-
-	if cpu.b != 0x04 {
-		t.Errorf("DCR B did not decrement B register correctly")
-	}
-
-	assertCycles(t, cpu, 5)
-}
-
-func Fuzz_DCR_B_Flags(f *testing.F) {
+func Fuzz_DCR_B(f *testing.F) {
 	tData := []flagDataTest{
 		{value: 0xAB, flagName: "Parity", flagMask: Parity},
 		{value: 0x01, flagName: "Zero", flagMask: Zero},
@@ -149,9 +133,15 @@ func Fuzz_DCR_B_Flags(f *testing.F) {
 
 		cpu.Run()
 
+		if cpu.b != d.value-1 {
+			t.Errorf("DCR B did not decrement B register correctly")
+		}
+
 		if !cpu.flags.Get(d.flagMask) {
 			t.Errorf("DCR B did not set the %s flag correctly", d.flagName)
 		}
+
+		assertCycles(t, cpu, 5)
 	})
 }
 
@@ -162,6 +152,10 @@ func Test_MVI_B(t *testing.T) {
 
 	if cpu.b != 0x42 {
 		t.Errorf("MVI B did not load the correct value to register")
+	}
+
+	if cpu.pc != 2 {
+		t.Errorf("MVI B did not increment PC correctly")
 	}
 
 	assertCycles(t, cpu, 7)
@@ -236,20 +230,7 @@ func Test_DCX_B(t *testing.T) {
 	assertCycles(t, cpu, 5)
 }
 
-func Test_INR_C(t *testing.T) {
-	cpu := createCPUWithProgramLoaded([]byte{0x0c, 0x01})
-	cpu.c = 0x03
-
-	cpu.Run()
-
-	if cpu.c != 0x04 {
-		t.Errorf("INR C did not increment the program correctly")
-	}
-
-	assertCycles(t, cpu, 5)
-}
-
-func Fuzz_INR_C_Flags(f *testing.F) {
+func Fuzz_INR_C(f *testing.F) {
 	tData := []flagDataTest{
 		{value: 0xA9, flagName: "Parity", flagMask: Parity},
 		{value: 0xFF, flagName: "Zero", flagMask: Zero},
@@ -269,26 +250,19 @@ func Fuzz_INR_C_Flags(f *testing.F) {
 
 		cpu.Run()
 
+		if cpu.c != d.value+1 {
+			t.Errorf("INR C did not increment the program correctly")
+		}
+
 		if !cpu.flags.Get(d.flagMask) {
 			t.Errorf("INR C did not set the %s flag correctly", d.flagName)
 		}
+
+		assertCycles(t, cpu, 5)
 	})
 }
 
-func Test_DCR_C(t *testing.T) {
-	cpu := createCPUWithProgramLoaded([]byte{0x0d, 0x01})
-	cpu.c = 0x05
-
-	cpu.Run()
-
-	if cpu.c != 0x04 {
-		t.Errorf("DCR C did not decrement C register correctly")
-	}
-
-	assertCycles(t, cpu, 5)
-}
-
-func Fuzz_DCR_C_Flags(f *testing.F) {
+func Fuzz_DCR_C(f *testing.F) {
 	tData := []flagDataTest{
 		{value: 0xAB, flagName: "Parity", flagMask: Parity},
 		{value: 0x01, flagName: "Zero", flagMask: Zero},
@@ -308,9 +282,15 @@ func Fuzz_DCR_C_Flags(f *testing.F) {
 
 		cpu.Run()
 
+		if cpu.c != d.value-1 {
+			t.Errorf("DCR C did not decrement C register correctly")
+		}
+
 		if !cpu.flags.Get(d.flagMask) {
 			t.Errorf("DCR C did not set the %s flag correctly", d.flagName)
 		}
+
+		assertCycles(t, cpu, 5)
 	})
 }
 
@@ -321,6 +301,10 @@ func Test_MVI_C(t *testing.T) {
 
 	if cpu.c != 0x42 {
 		t.Errorf("MVI C did not load the correct value to register")
+	}
+
+	if cpu.pc != 2 {
+		t.Errorf("MVI C did not increment PC correctly")
 	}
 
 	assertCycles(t, cpu, 7)
@@ -350,6 +334,10 @@ func Test_LXI_D(t *testing.T) {
 
 	if cpu.e != 0x02 || cpu.d != 0x03 {
 		t.Errorf("LXI D did not set registers correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("LXI B did not increment PC correctly")
 	}
 
 	assertCycles(t, cpu, 10)
@@ -457,6 +445,10 @@ func Test_MVI_D(t *testing.T) {
 
 	if cpu.d != 0x42 {
 		t.Errorf("MVI D did not load the correct value to register")
+	}
+
+	if cpu.pc != 2 {
+		t.Errorf("MVI D did not increment PC correctly")
 	}
 
 	assertCycles(t, cpu, 7)
@@ -641,6 +633,10 @@ func Test_MVI_E(t *testing.T) {
 		t.Errorf("MVI E did not load the correct value to register")
 	}
 
+	if cpu.pc != 2 {
+		t.Errorf("MVI E did not increment PC correctly")
+	}
+
 	assertCycles(t, cpu, 7)
 }
 
@@ -658,6 +654,267 @@ func Test_RARWithCarryFlagUnset(t *testing.T) {
 	if !cpu.flags.Get(Carry) {
 		t.Errorf("RRC did not set the Carry flag correctly")
 	}
+}
+
+func Test_LXI_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x21, 0x02, 0x03})
+
+	cpu.Run()
+
+	if cpu.l != 0x02 || cpu.h != 0x03 {
+		t.Errorf("LXI H did not set registers correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("LXI H did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_SHLD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x22, 0x03, 0x00, 0x00, 0x00})
+	cpu.l = 0x55
+	cpu.h = 0x66
+
+	cpu.Run()
+
+	if cpu.memory[0x0003] != 0x55 || cpu.memory[0x0004] != 0x66 {
+		t.Errorf("SHLD did not write into memory correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("SHLD did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 16)
+}
+
+func Test_INX_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x23, 0x01})
+
+	cpu.h = 0x03
+	cpu.l = 0x01
+
+	cpu.Run()
+
+	if cpu.l != 0x02 || cpu.h != 0x03 {
+		t.Errorf("INX H did not increment the program correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Fuzz_INR_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA9, flagName: "Parity", flagMask: Parity},
+		{value: 0xFF, flagName: "Zero", flagMask: Zero},
+		{value: 0x2F, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7F, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x24, 0x01})
+
+		cpu.h = d.value
+
+		cpu.Run()
+
+		if cpu.h != d.value+1 {
+			t.Errorf("INR H did not increment H register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("INR H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Fuzz_DCR_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x31, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x25, 0x01})
+
+		cpu.h = d.value
+
+		cpu.Run()
+
+		if cpu.h != d.value-1 {
+			t.Errorf("DCR H did not decrement H register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("DCR H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Test_MVI_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x26, 0x42})
+
+	cpu.Run()
+
+	if cpu.h != 0x42 {
+		t.Errorf("MVI H did not load the correct value to register")
+	}
+
+	if cpu.pc != 2 {
+		t.Errorf("MVI H did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_DAD_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x29, 0x01})
+	cpu.h = 0xF0
+	cpu.l = 0x12
+
+	cpu.Run()
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("DAD H did not set the carry flag correctly")
+	}
+
+	if cpu.l != 0x24 {
+		t.Errorf("DAD H did not set the L register correctly")
+	}
+
+	if cpu.h != 0xe0 {
+		t.Errorf("DAD H did not set the H register correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_LHLD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x2a, 0x03, 0x00, 0x55, 0x66})
+
+	cpu.Run()
+
+	if cpu.l != 0x55 || cpu.h != 0x66 {
+		t.Errorf("LHLD did not set HL registers correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("LHLD did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 16)
+}
+
+func Test_DCX_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x2b, 0x01})
+	cpu.h = 0x55
+	cpu.l = 0x00
+
+	cpu.Run()
+
+	if cpu.h != 0x54 || cpu.l != 0xFF {
+		t.Errorf("DCX H did not set the HL register pair correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Fuzz_INR_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA9, flagName: "Parity", flagMask: Parity},
+		{value: 0xFF, flagName: "Zero", flagMask: Zero},
+		{value: 0x2F, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7F, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x2c, 0x01})
+
+		cpu.l = d.value
+
+		cpu.Run()
+
+		if cpu.l != d.value+1 {
+			t.Errorf("INR L did not increment L register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("INR L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Fuzz_DCR_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xAB, flagName: "Parity", flagMask: Parity},
+		{value: 0x01, flagName: "Zero", flagMask: Zero},
+		{value: 0x31, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x81, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x2d, 0x01})
+
+		cpu.l = d.value
+
+		cpu.Run()
+
+		if cpu.l != d.value-1 {
+			t.Errorf("DCR L did not decrement L register correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("DCR L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 5)
+	})
+}
+
+func Test_MVI_L(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x2e, 0x42})
+
+	cpu.Run()
+
+	if cpu.l != 0x42 {
+		t.Errorf("MVI L did not load the correct value to register")
+	}
+
+	if cpu.pc != 2 {
+		t.Errorf("MVI L did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 7)
 }
 
 func Test_CMA(t *testing.T) {
