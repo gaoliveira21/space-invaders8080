@@ -88,8 +88,8 @@ func NewIntel8080() *Intel8080 {
 		0x2f: {cpu._CMA, "CMA", 1, 4},
 
 		0x30: {cpu._NOP, "*NOP", 1, 4},
-		0x31: {cpu._NI, "Not Impl", 0, 0},
-		0x32: {cpu._NI, "Not Impl", 0, 0},
+		0x31: {cpu._LXI_SP, "LXI SP", 3, 10},
+		0x32: {cpu._STA, "STA", 3, 13},
 		0x33: {cpu._NI, "Not Impl", 0, 0},
 		0x34: {cpu._NI, "Not Impl", 0, 0},
 		0x35: {cpu._NI, "Not Impl", 0, 0},
@@ -655,6 +655,26 @@ func (cpu *Intel8080) _MVI_L() {
 
 func (cpu *Intel8080) _CMA() {
 	cpu.a = ^cpu.a
+}
+
+func (cpu *Intel8080) _LXI_SP() {
+	lb := uint16(cpu.memory[cpu.pc])
+	hb := uint16(cpu.memory[cpu.pc+1])
+
+	cpu.sp = (hb << 8) | lb
+
+	cpu.pc += 2
+}
+
+func (cpu *Intel8080) _STA() {
+	lb := uint16(cpu.memory[cpu.pc])
+	hb := uint16(cpu.memory[cpu.pc+1])
+
+	addr := (hb << 8) | lb
+
+	cpu.memory[addr] = cpu.a
+
+	cpu.pc += 2
 }
 
 func (cpu *Intel8080) _JNZ() {

@@ -672,6 +672,23 @@ func Test_LXI_H(t *testing.T) {
 	assertCycles(t, cpu, 10)
 }
 
+func Test_STA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x32, 0x03, 0x00, 0x00})
+	cpu.a = 0x99
+
+	cpu.Run()
+
+	if cpu.memory[0x0003] != 0x99 {
+		t.Errorf("STA did not write A into memory correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("STA did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 13)
+}
+
 func Test_SHLD(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0x22, 0x03, 0x00, 0x00, 0x00})
 	cpu.l = 0x55
@@ -928,6 +945,22 @@ func Test_CMA(t *testing.T) {
 	}
 
 	assertCycles(t, cpu, 4)
+}
+
+func Test_LXI_SP(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x31, 0x02, 0x03})
+
+	cpu.Run()
+
+	if cpu.sp != 0x0302 {
+		t.Errorf("LXI SP did not set Stack Pointer correctly")
+	}
+
+	if cpu.pc != 3 {
+		t.Errorf("LXI SP did not increment PC correctly")
+	}
+
+	assertCycles(t, cpu, 10)
 }
 
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
