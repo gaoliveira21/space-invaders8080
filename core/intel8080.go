@@ -90,19 +90,19 @@ func NewIntel8080() *Intel8080 {
 		0x30: {cpu._NOP, "*NOP", 1, 4},
 		0x31: {cpu._LXI_SP, "LXI SP", 3, 10},
 		0x32: {cpu._STA, "STA", 3, 13},
-		0x33: {cpu._NI, "Not Impl", 0, 0},
-		0x34: {cpu._NI, "Not Impl", 0, 0},
-		0x35: {cpu._NI, "Not Impl", 0, 0},
-		0x36: {cpu._NI, "Not Impl", 0, 0},
-		0x37: {cpu._NI, "Not Impl", 0, 0},
-		0x38: {cpu._NI, "Not Impl", 0, 0},
-		0x39: {cpu._NI, "Not Impl", 0, 0},
-		0x3a: {cpu._NI, "Not Impl", 0, 0},
-		0x3b: {cpu._NI, "Not Impl", 0, 0},
-		0x3c: {cpu._NI, "Not Impl", 0, 0},
-		0x3d: {cpu._NI, "Not Impl", 0, 0},
-		0x3e: {cpu._NI, "Not Impl", 0, 0},
-		0x3f: {cpu._NI, "Not Impl", 0, 0},
+		0x33: {cpu._INX_SP, "INX SP", 1, 5},
+		0x34: {cpu._INR_M, "INR M", 1, 10},
+		0x35: {cpu._DCR_M, "DCR M", 1, 10},
+		0x36: {cpu._MVI_M, "MVI M", 2, 10},
+		0x37: {cpu._STC, "STC", 1, 4},
+		0x38: {cpu._NOP, "*NOP", 1, 4},
+		0x39: {cpu._DAD_SP, "DAD SP", 1, 10},
+		0x3a: {cpu._LDA, "LDA", 3, 13},
+		0x3b: {cpu._DCX_SP, "DCX SP", 1, 5},
+		0x3c: {cpu._INR_A, "INR A", 1, 5},
+		0x3d: {cpu._DCR_A, "DCR A", 1, 5},
+		0x3e: {cpu._MVI_A, "MVI A", 2, 7},
+		0x3f: {cpu._CMC, "CMC", 1, 4},
 
 		0x40: {cpu._NI, "Not Impl", 0, 0},
 		0x41: {cpu._NI, "Not Impl", 0, 0},
@@ -675,6 +675,102 @@ func (cpu *Intel8080) _STA() {
 	cpu.memory[addr] = cpu.a
 
 	cpu.pc += 2
+}
+
+func (cpu *Intel8080) _INX_SP() {
+	cpu.sp++
+}
+
+func (cpu *Intel8080) _INR_M() {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	value := cpu.memory[addr]
+	value++
+	cpu.memory[addr] = value
+
+	cpu.flags.Set(Zero, value == 0)
+	cpu.flags.Set(Sign, value&0x80 != 0)
+	cpu.flags.Set(AuxCarry, value&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(value))
+}
+
+func (cpu *Intel8080) _DCR_M() {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	value := cpu.memory[addr]
+	value--
+	cpu.memory[addr] = value
+
+	cpu.flags.Set(Zero, value == 0)
+	cpu.flags.Set(Sign, value&0x80 != 0)
+	cpu.flags.Set(AuxCarry, value&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(value))
+}
+
+func (cpu *Intel8080) _MVI_M() {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	value := cpu.memory[cpu.pc]
+	cpu.memory[addr] = value
+
+	cpu.pc++
+}
+
+func (cpu *Intel8080) _STC() {
+	cpu.flags.Set(Carry, true)
+}
+
+func (cpu *Intel8080) _DAD_SP() {
+	hl := uint32(cpu.h)<<8 | uint32(cpu.l)
+
+	result := hl + uint32(cpu.sp)
+
+	cpu.h = byte(result >> 8)
+	cpu.l = byte(result & 0xFF)
+
+	cpu.flags.Set(Carry, result > 0xFFFF)
+}
+
+func (cpu *Intel8080) _LDA() {
+	lb := uint16(cpu.memory[cpu.pc])
+	hb := uint16(cpu.memory[cpu.pc+1])
+
+	addr := hb<<8 | lb
+	cpu.a = cpu.memory[addr]
+
+	cpu.pc += 2
+}
+
+func (cpu *Intel8080) _DCX_SP() {
+	cpu.sp--
+}
+
+func (cpu *Intel8080) _INR_A() {
+	cpu.a++
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(AuxCarry, cpu.a&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) _DCR_A() {
+	cpu.a--
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(AuxCarry, cpu.a&0x0F == 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) _MVI_A() {
+	cpu.a = cpu.memory[cpu.pc]
+	cpu.pc++
+}
+
+func (cpu *Intel8080) _CMC() {
+	if cpu.flags.Get(Carry) {
+		cpu.flags.Set(Carry, false)
+	} else {
+		cpu.flags.Set(Carry, true)
+	}
 }
 
 func (cpu *Intel8080) _JNZ() {
