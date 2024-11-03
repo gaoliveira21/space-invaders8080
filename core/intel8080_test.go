@@ -1228,6 +1228,891 @@ func Test_CMCWithCarrySet(t *testing.T) {
 	assertCycles(t, cpu, 4)
 }
 
+func Test_MOV_BB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x40, 0x01})
+	cpu.b = 0x5
+
+	cpu.Run()
+
+	if cpu.b != 0x5 {
+		t.Errorf("MOV B,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x41, 0x01})
+	cpu.b = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x42, 0x01})
+	cpu.b = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x43, 0x01})
+	cpu.b = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x44, 0x01})
+	cpu.b = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x45, 0x01})
+	cpu.b = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_BM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x46, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.b = 0x1
+
+	cpu.Run()
+
+	if cpu.b != 0x89 {
+		t.Errorf("MOV B,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_BA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x47, 0x01})
+	cpu.b = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.b != 0x8 {
+		t.Errorf("MOV B,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x48, 0x01})
+	cpu.c = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x49, 0x01})
+	cpu.c = 0x5
+
+	cpu.Run()
+
+	if cpu.c != 0x5 {
+		t.Errorf("MOV C,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4a, 0x01})
+	cpu.c = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4b, 0x01})
+	cpu.c = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4c, 0x01})
+	cpu.c = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4d, 0x01})
+	cpu.c = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_CM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4e, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.c = 0x1
+
+	cpu.Run()
+
+	if cpu.c != 0x89 {
+		t.Errorf("MOV C,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_CA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x4f, 0x01})
+	cpu.c = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.c != 0x8 {
+		t.Errorf("MOV C,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x50, 0x01})
+	cpu.d = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x51, 0x01})
+	cpu.d = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x52, 0x01})
+	cpu.d = 0x5
+
+	cpu.Run()
+
+	if cpu.d != 0x5 {
+		t.Errorf("MOV D,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x53, 0x01})
+	cpu.d = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x54, 0x01})
+	cpu.d = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x55, 0x01})
+	cpu.d = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_DM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x56, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.d = 0x1
+
+	cpu.Run()
+
+	if cpu.d != 0x89 {
+		t.Errorf("MOV D,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_DA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x57, 0x01})
+	cpu.d = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.d != 0x8 {
+		t.Errorf("MOV D,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x58, 0x01})
+	cpu.e = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x59, 0x01})
+	cpu.e = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_ED(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5a, 0x01})
+	cpu.e = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5b, 0x01})
+	cpu.e = 0x5
+
+	cpu.Run()
+
+	if cpu.e != 0x5 {
+		t.Errorf("MOV E,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5c, 0x01})
+	cpu.e = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5d, 0x01})
+	cpu.e = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_EM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5e, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.e = 0x1
+
+	cpu.Run()
+
+	if cpu.e != 0x89 {
+		t.Errorf("MOV E,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_EA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x5f, 0x01})
+	cpu.e = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.e != 0x8 {
+		t.Errorf("MOV E,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x60, 0x01})
+	cpu.h = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x61, 0x01})
+	cpu.h = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x62, 0x01})
+	cpu.h = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x63, 0x01})
+	cpu.h = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x64, 0x01})
+	cpu.h = 0x5
+
+	cpu.Run()
+
+	if cpu.h != 0x5 {
+		t.Errorf("MOV H,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x65, 0x01})
+	cpu.h = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_HM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x66, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+
+	cpu.Run()
+
+	if cpu.h != 0x89 {
+		t.Errorf("MOV H,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_HA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x67, 0x01})
+	cpu.h = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.h != 0x8 {
+		t.Errorf("MOV H,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x68, 0x01})
+	cpu.l = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x69, 0x01})
+	cpu.l = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6a, 0x01})
+	cpu.l = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6b, 0x01})
+	cpu.l = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6c, 0x01})
+	cpu.l = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6d, 0x01})
+	cpu.l = 0x5
+
+	cpu.Run()
+
+	if cpu.l != 0x5 {
+		t.Errorf("MOV L,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_LM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6e, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+
+	cpu.Run()
+
+	if cpu.l != 0x89 {
+		t.Errorf("MOV L,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_LA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x6f, 0x01})
+	cpu.l = 0x1
+	cpu.a = 0x8
+
+	cpu.Run()
+
+	if cpu.l != 0x8 {
+		t.Errorf("MOV L,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_MB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x70, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.b = 0x90
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.b {
+		t.Errorf("MOV M,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_MC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x71, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.c = 0x90
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.c {
+		t.Errorf("MOV M,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_MD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x72, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.d = 0x90
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.d {
+		t.Errorf("MOV M,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_ME(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x73, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.e = 0x90
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.e {
+		t.Errorf("MOV M,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_MH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x74, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.h {
+		t.Errorf("MOV M,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_ML(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x75, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.l {
+		t.Errorf("MOV M,L did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_MA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x77, 0x01, 0x2233: 0x00})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.a = 0x90
+
+	cpu.Run()
+
+	if cpu.memory[0x2233] != cpu.a {
+		t.Errorf("MOV M,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_AB(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x78, 0x01})
+	cpu.a = 0x1
+	cpu.b = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,B did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AC(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x79, 0x01})
+	cpu.a = 0x1
+	cpu.c = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,C did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AD(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7a, 0x01})
+	cpu.a = 0x1
+	cpu.d = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,D did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AE(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7b, 0x01})
+	cpu.a = 0x1
+	cpu.e = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,E did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AH(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7c, 0x01})
+	cpu.a = 0x1
+	cpu.h = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,H did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7d, 0x01})
+	cpu.a = 0x1
+	cpu.l = 0x8
+
+	cpu.Run()
+
+	if cpu.a != 0x8 {
+		t.Errorf("MOV A,LL did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_MOV_AM(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7e, 0x01, 0x2233: 0x89})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.a = 0x1
+
+	cpu.Run()
+
+	if cpu.a != 0x89 {
+		t.Errorf("MOV A,M did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_MOV_AA(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x7f, 0x01})
+	cpu.a = 0x5
+
+	cpu.Run()
+
+	if cpu.a != 0x5 {
+		t.Errorf("MOV A,A did not move register correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)

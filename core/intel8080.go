@@ -104,73 +104,73 @@ func NewIntel8080() *Intel8080 {
 		0x3e: {cpu._MVI_A, "MVI A", 2},
 		0x3f: {cpu._CMC, "CMC", 1},
 
-		0x40: {cpu._NI, "Not Impl", 0},
-		0x41: {cpu._NI, "Not Impl", 0},
-		0x42: {cpu._NI, "Not Impl", 0},
-		0x43: {cpu._NI, "Not Impl", 0},
-		0x44: {cpu._NI, "Not Impl", 0},
-		0x45: {cpu._NI, "Not Impl", 0},
-		0x46: {cpu._NI, "Not Impl", 0},
-		0x47: {cpu._NI, "Not Impl", 0},
-		0x48: {cpu._NI, "Not Impl", 0},
-		0x49: {cpu._NI, "Not Impl", 0},
-		0x4a: {cpu._NI, "Not Impl", 0},
-		0x4b: {cpu._NI, "Not Impl", 0},
-		0x4c: {cpu._NI, "Not Impl", 0},
-		0x4d: {cpu._NI, "Not Impl", 0},
-		0x4e: {cpu._NI, "Not Impl", 0},
-		0x4f: {cpu._NI, "Not Impl", 0},
+		0x40: {cpu._MOV_BB, "MOV B,B", 1},
+		0x41: {cpu._MOV_BC, "MOV B,C", 1},
+		0x42: {cpu._MOV_BD, "MOV B,D", 1},
+		0x43: {cpu._MOV_BE, "MOV B,E", 1},
+		0x44: {cpu._MOV_BH, "MOV B,H", 1},
+		0x45: {cpu._MOV_BL, "MOV B,L", 1},
+		0x46: {cpu._MOV_BM, "MOV B,M", 1},
+		0x47: {cpu._MOV_BA, "MOV B,A", 1},
+		0x48: {cpu._MOV_CB, "MOV C,B", 1},
+		0x49: {cpu._MOV_CC, "MOV C,C", 1},
+		0x4a: {cpu._MOV_CD, "MOV C,D", 1},
+		0x4b: {cpu._MOV_CE, "MOV C,E", 1},
+		0x4c: {cpu._MOV_CH, "MOV C,H", 1},
+		0x4d: {cpu._MOV_CL, "MOV C,L", 1},
+		0x4e: {cpu._MOV_CM, "MOV C,M", 1},
+		0x4f: {cpu._MOV_CA, "MOV C,A", 1},
 
-		0x50: {cpu._NI, "Not Impl", 0},
-		0x51: {cpu._NI, "Not Impl", 0},
-		0x52: {cpu._NI, "Not Impl", 0},
-		0x53: {cpu._NI, "Not Impl", 0},
-		0x54: {cpu._NI, "Not Impl", 0},
-		0x55: {cpu._NI, "Not Impl", 0},
-		0x56: {cpu._NI, "Not Impl", 0},
-		0x57: {cpu._NI, "Not Impl", 0},
-		0x58: {cpu._NI, "Not Impl", 0},
-		0x59: {cpu._NI, "Not Impl", 0},
-		0x5a: {cpu._NI, "Not Impl", 0},
-		0x5b: {cpu._NI, "Not Impl", 0},
-		0x5c: {cpu._NI, "Not Impl", 0},
-		0x5d: {cpu._NI, "Not Impl", 0},
-		0x5e: {cpu._NI, "Not Impl", 0},
-		0x5f: {cpu._NI, "Not Impl", 0},
+		0x50: {cpu._MOV_DB, "MOV D,B", 1},
+		0x51: {cpu._MOV_DC, "MOV D,C", 1},
+		0x52: {cpu._MOV_DD, "MOV D,D", 1},
+		0x53: {cpu._MOV_DE, "MOV D,E", 1},
+		0x54: {cpu._MOV_DH, "MOV D,H", 1},
+		0x55: {cpu._MOV_DL, "MOV D,L", 1},
+		0x56: {cpu._MOV_DM, "MOV D,M", 1},
+		0x57: {cpu._MOV_DA, "MOV D,A", 1},
+		0x58: {cpu._MOV_EB, "MOV E,B", 1},
+		0x59: {cpu._MOV_EC, "MOV E,C", 1},
+		0x5a: {cpu._MOV_ED, "MOV E,D", 1},
+		0x5b: {cpu._MOV_EE, "MOV E,E", 1},
+		0x5c: {cpu._MOV_EH, "MOV E,H", 1},
+		0x5d: {cpu._MOV_EL, "MOV E,L", 1},
+		0x5e: {cpu._MOV_EM, "MOV E,M", 1},
+		0x5f: {cpu._MOV_EA, "MOV E,A", 1},
 
-		0x60: {cpu._NI, "Not Impl", 0},
-		0x61: {cpu._NI, "Not Impl", 0},
-		0x62: {cpu._NI, "Not Impl", 0},
-		0x63: {cpu._NI, "Not Impl", 0},
-		0x64: {cpu._NI, "Not Impl", 0},
-		0x65: {cpu._NI, "Not Impl", 0},
-		0x66: {cpu._NI, "Not Impl", 0},
-		0x67: {cpu._NI, "Not Impl", 0},
-		0x68: {cpu._NI, "Not Impl", 0},
-		0x69: {cpu._NI, "Not Impl", 0},
-		0x6a: {cpu._NI, "Not Impl", 0},
-		0x6b: {cpu._NI, "Not Impl", 0},
-		0x6c: {cpu._NI, "Not Impl", 0},
-		0x6d: {cpu._NI, "Not Impl", 0},
-		0x6e: {cpu._NI, "Not Impl", 0},
-		0x6f: {cpu._NI, "Not Impl", 0},
+		0x60: {cpu._MOV_HB, "MOV H,B", 1},
+		0x61: {cpu._MOV_HC, "MOV H,C", 1},
+		0x62: {cpu._MOV_HD, "MOV H,D", 1},
+		0x63: {cpu._MOV_HE, "MOV H,E", 1},
+		0x64: {cpu._MOV_HH, "MOV H,H", 1},
+		0x65: {cpu._MOV_HL, "MOV H,L", 1},
+		0x66: {cpu._MOV_HM, "MOV H,M", 1},
+		0x67: {cpu._MOV_HA, "MOV H,A", 1},
+		0x68: {cpu._MOV_LB, "MOV L,B", 1},
+		0x69: {cpu._MOV_LC, "MOV L,C", 1},
+		0x6a: {cpu._MOV_LD, "MOV L,D", 1},
+		0x6b: {cpu._MOV_LE, "MOV L,E", 1},
+		0x6c: {cpu._MOV_LH, "MOV L,H", 1},
+		0x6d: {cpu._MOV_LL, "MOV L,L", 1},
+		0x6e: {cpu._MOV_LM, "MOV L,M", 1},
+		0x6f: {cpu._MOV_LA, "MOV L,A", 1},
 
-		0x70: {cpu._NI, "Not Impl", 0},
-		0x71: {cpu._NI, "Not Impl", 0},
-		0x72: {cpu._NI, "Not Impl", 0},
-		0x73: {cpu._NI, "Not Impl", 0},
-		0x74: {cpu._NI, "Not Impl", 0},
-		0x75: {cpu._NI, "Not Impl", 0},
+		0x70: {cpu._MOV_MB, "MOV M,B", 1},
+		0x71: {cpu._MOV_MC, "MOV M,C", 1},
+		0x72: {cpu._MOV_MD, "MOV M,D", 1},
+		0x73: {cpu._MOV_ME, "MOV M,E", 1},
+		0x74: {cpu._MOV_MH, "MOV M,H", 1},
+		0x75: {cpu._MOV_ML, "MOV M,L", 1},
 		0x76: {cpu._NI, "Not Impl", 0}, // IO and Special Group
-		0x77: {cpu._NI, "Not Impl", 0},
-		0x78: {cpu._NI, "Not Impl", 0},
-		0x79: {cpu._NI, "Not Impl", 0},
-		0x7a: {cpu._NI, "Not Impl", 0},
-		0x7b: {cpu._NI, "Not Impl", 0},
-		0x7c: {cpu._NI, "Not Impl", 0},
-		0x7d: {cpu._NI, "Not Impl", 0},
-		0x7e: {cpu._NI, "Not Impl", 0},
-		0x7f: {cpu._NI, "Not Impl", 0},
+		0x77: {cpu._MOV_MA, "MOV M,A", 1},
+		0x78: {cpu._MOV_AB, "MOV A,B", 1},
+		0x79: {cpu._MOV_AC, "MOV A,C", 1},
+		0x7a: {cpu._MOV_AD, "MOV A,D", 1},
+		0x7b: {cpu._MOV_AE, "MOV A,E", 1},
+		0x7c: {cpu._MOV_AH, "MOV A,H", 1},
+		0x7d: {cpu._MOV_AL, "MOV A,L", 1},
+		0x7e: {cpu._MOV_AM, "MOV A,M", 1},
+		0x7f: {cpu._MOV_AA, "MOV A,A", 1},
 
 		0x80: {cpu._NI, "Not Impl", 0},
 		0x81: {cpu._NI, "Not Impl", 0},
@@ -880,6 +880,335 @@ func (cpu *Intel8080) _CMC() uint {
 	}
 
 	return 4
+}
+
+func (cpu *Intel8080) _MOV_BB() uint {
+	// B <- B (no operation needed since we're moving B to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BC() uint {
+	cpu.b = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BD() uint {
+	cpu.b = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BE() uint {
+	cpu.b = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BH() uint {
+	cpu.b = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BL() uint {
+	cpu.b = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_BM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.b = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_BA() uint {
+	cpu.b = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CB() uint {
+	cpu.c = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CC() uint {
+	// C <- C (no operation needed since we're moving C to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CD() uint {
+	cpu.c = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CE() uint {
+	cpu.c = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CH() uint {
+	cpu.c = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CL() uint {
+	cpu.c = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_CM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.c = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_CA() uint {
+	cpu.c = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DB() uint {
+	cpu.d = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DC() uint {
+	cpu.d = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DD() uint {
+	// D <- D (no operation needed since we're moving D to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DE() uint {
+	cpu.d = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DH() uint {
+	cpu.d = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DL() uint {
+	cpu.d = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_DM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.d = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_DA() uint {
+	cpu.d = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EB() uint {
+	cpu.e = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EC() uint {
+	cpu.e = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_ED() uint {
+	cpu.e = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EE() uint {
+	// E <- E (no operation needed since we're moving E to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EH() uint {
+	cpu.e = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EL() uint {
+	cpu.e = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_EM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.e = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_EA() uint {
+	cpu.e = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HB() uint {
+	cpu.h = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HC() uint {
+	cpu.h = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HD() uint {
+	cpu.h = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HE() uint {
+	cpu.h = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HH() uint {
+	// H <- H (no operation needed since we're moving H to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HL() uint {
+	cpu.h = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_HM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.h = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_HA() uint {
+	cpu.h = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LB() uint {
+	cpu.l = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LC() uint {
+	cpu.l = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LD() uint {
+	cpu.l = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LE() uint {
+	cpu.l = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LH() uint {
+	cpu.l = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LL() uint {
+	// L <- L (no operation needed since we're moving L to itself)
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_LM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.l = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_LA() uint {
+	cpu.l = cpu.a
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_MB() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.b
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_MC() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.c
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_MD() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.d
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_ME() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.e
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_MH() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.h
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_ML() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.l
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_MA() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.memory[addr] = cpu.a
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_AB() uint {
+	cpu.a = cpu.b
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AC() uint {
+	cpu.a = cpu.c
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AD() uint {
+	cpu.a = cpu.d
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AE() uint {
+	cpu.a = cpu.e
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AH() uint {
+	cpu.a = cpu.h
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AL() uint {
+	cpu.a = cpu.l
+	return 5
+}
+
+func (cpu *Intel8080) _MOV_AM() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.a = cpu.memory[addr]
+	return 7
+}
+
+func (cpu *Intel8080) _MOV_AA() uint {
+	// A <- A (no operation needed since we're moving A to itself)
+	return 5
 }
 
 func (cpu *Intel8080) _JNZ() uint {
