@@ -2369,6 +2369,270 @@ func Fuzz_ADD_A(f *testing.F) {
 	})
 }
 
+func Fuzz_ADC_B(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x88, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.b = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC B did not add A + B + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC B did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_C(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x89, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.c = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC C did not add A + C + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC C did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8a, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.d = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC D did not add A + D + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8b, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.e = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC E did not add A + E + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8c, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.h = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC H did not add A + H + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8d, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.l = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC L did not add A + L + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADC_M(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA3, flagName: "Parity", flagMask: Parity},
+		{value: 0xFA, flagName: "Zero", flagMask: Zero},
+		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8e, 0x00, 0x00, 0x00, 0x2233: d.value})
+		cpu.flags.Set(Carry, true)
+		cpu.h = 0x22
+		cpu.l = 0x33
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+6 {
+			t.Errorf("ADC M did not add A + (HL) + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC M did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Fuzz_ADC_A(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0x80, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x8f, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, false)
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value+d.value {
+			t.Errorf("ADC A did not add A + A + Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADC A did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)

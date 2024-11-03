@@ -180,14 +180,14 @@ func NewIntel8080() *Intel8080 {
 		0x85: {cpu._ADD_L, "ADD L", 1},
 		0x86: {cpu._ADD_M, "ADD M", 1},
 		0x87: {cpu._ADD_A, "ADD A", 1},
-		0x88: {cpu._NI, "Not Impl", 0},
-		0x89: {cpu._NI, "Not Impl", 0},
-		0x8a: {cpu._NI, "Not Impl", 0},
-		0x8b: {cpu._NI, "Not Impl", 0},
-		0x8c: {cpu._NI, "Not Impl", 0},
-		0x8d: {cpu._NI, "Not Impl", 0},
-		0x8e: {cpu._NI, "Not Impl", 0},
-		0x8f: {cpu._NI, "Not Impl", 0},
+		0x88: {cpu._ADC_B, "ADC B", 1},
+		0x89: {cpu._ADC_C, "ADC C", 1},
+		0x8a: {cpu._ADC_D, "ADC D", 1},
+		0x8b: {cpu._ADC_E, "ADC E", 1},
+		0x8c: {cpu._ADC_H, "ADC H", 1},
+		0x8d: {cpu._ADC_L, "ADC L", 1},
+		0x8e: {cpu._ADC_M, "ADC M", 1},
+		0x8f: {cpu._ADC_A, "ADC A", 1},
 
 		0x90: {cpu._NI, "Not Impl", 0},
 		0x91: {cpu._NI, "Not Impl", 0},
@@ -337,6 +337,24 @@ func hasParity(b byte) bool {
 
 func (cpu *Intel8080) add(value byte) {
 	result := uint16(cpu.a) + uint16(value)
+
+	cpu.flags.Set(Carry, result > 0xFF)
+	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
+
+	cpu.a = uint8(result & 0xFF)
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) adc(value byte) {
+	carryVal := uint16(0)
+	if cpu.flags.Get(Carry) {
+		carryVal = 1
+	}
+
+	result := uint16(cpu.a) + uint16(value) + carryVal
 
 	cpu.flags.Set(Carry, result > 0xFF)
 	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
@@ -1262,6 +1280,47 @@ func (cpu *Intel8080) _ADD_M() uint {
 
 func (cpu *Intel8080) _ADD_A() uint {
 	cpu.add(cpu.a)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_B() uint {
+	cpu.adc(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_C() uint {
+	cpu.adc(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_D() uint {
+	cpu.adc(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_E() uint {
+	cpu.adc(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_H() uint {
+	cpu.adc(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_L() uint {
+	cpu.adc(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _ADC_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.adc(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _ADC_A() uint {
+	cpu.adc(cpu.a)
 	return 4
 }
 
