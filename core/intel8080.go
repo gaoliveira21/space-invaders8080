@@ -172,14 +172,14 @@ func NewIntel8080() *Intel8080 {
 		0x7e: {cpu._MOV_AM, "MOV A,M", 1},
 		0x7f: {cpu._MOV_AA, "MOV A,A", 1},
 
-		0x80: {cpu._NI, "Not Impl", 0},
-		0x81: {cpu._NI, "Not Impl", 0},
-		0x82: {cpu._NI, "Not Impl", 0},
-		0x83: {cpu._NI, "Not Impl", 0},
-		0x84: {cpu._NI, "Not Impl", 0},
-		0x85: {cpu._NI, "Not Impl", 0},
-		0x86: {cpu._NI, "Not Impl", 0},
-		0x87: {cpu._NI, "Not Impl", 0},
+		0x80: {cpu._ADD_B, "ADD B", 1},
+		0x81: {cpu._ADD_C, "ADD C", 1},
+		0x82: {cpu._ADD_D, "ADD D", 1},
+		0x83: {cpu._ADD_E, "ADD E", 1},
+		0x84: {cpu._ADD_H, "ADD H", 1},
+		0x85: {cpu._ADD_L, "ADD L", 1},
+		0x86: {cpu._ADD_M, "ADD M", 1},
+		0x87: {cpu._ADD_A, "ADD A", 1},
 		0x88: {cpu._NI, "Not Impl", 0},
 		0x89: {cpu._NI, "Not Impl", 0},
 		0x8a: {cpu._NI, "Not Impl", 0},
@@ -333,6 +333,19 @@ func (cpu *Intel8080) Run() {
 
 func hasParity(b byte) bool {
 	return bits.OnesCount8(b)%2 == 0
+}
+
+func (cpu *Intel8080) add(value byte) {
+	result := uint16(cpu.a) + uint16(value)
+
+	cpu.flags.Set(Carry, result > 0xFF)
+	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
+
+	cpu.a = uint8(result & 0xFF)
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1209,6 +1222,47 @@ func (cpu *Intel8080) _MOV_AM() uint {
 func (cpu *Intel8080) _MOV_AA() uint {
 	// A <- A (no operation needed since we're moving A to itself)
 	return 5
+}
+
+func (cpu *Intel8080) _ADD_B() uint {
+	cpu.add(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_C() uint {
+	cpu.add(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_D() uint {
+	cpu.add(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_E() uint {
+	cpu.add(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_H() uint {
+	cpu.add(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_L() uint {
+	cpu.add(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _ADD_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.add(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _ADD_A() uint {
+	cpu.add(cpu.a)
+	return 4
 }
 
 func (cpu *Intel8080) _JNZ() uint {

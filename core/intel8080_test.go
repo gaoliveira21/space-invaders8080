@@ -2113,6 +2113,262 @@ func Test_MOV_AA(t *testing.T) {
 	assertCycles(t, cpu, 5)
 }
 
+func Fuzz_ADD_B(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x80, 0x00, 0x00, 0x00})
+		cpu.b = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD B did not add A + B correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD B did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_C(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x81, 0x00, 0x00, 0x00})
+		cpu.c = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD C did not add A + C correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD C did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x82, 0x00, 0x00, 0x00})
+		cpu.d = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD D did not add A + D correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x83, 0x00, 0x00, 0x00})
+		cpu.e = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD E did not add A + E correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x84, 0x00, 0x00, 0x00})
+		cpu.h = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD H did not add A + H correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x85, 0x00, 0x00, 0x00})
+		cpu.l = d.value
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD L did not add A + L correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_ADD_M(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0xFB, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x86, 0x00, 0x00, 0x00, 0x2233: d.value})
+		cpu.h = 0x22
+		cpu.l = 0x33
+		cpu.a = 0x05
+
+		cpu.Run()
+
+		if cpu.a != d.value+5 {
+			t.Errorf("ADD M did not add A + (HL) correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD M did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Fuzz_ADD_A(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0xA4, flagName: "Parity", flagMask: Parity},
+		{value: 0x80, flagName: "Zero", flagMask: Zero},
+		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x87, 0x00, 0x00, 0x00})
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value+d.value {
+			t.Errorf("ADD A did not add A + A correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("ADD A did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)
