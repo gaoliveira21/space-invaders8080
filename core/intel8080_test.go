@@ -2909,6 +2909,289 @@ func Fuzz_SUB_A(f *testing.F) {
 	})
 }
 
+func Fuzz_SBB_B(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x98, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.b = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB B did not subtract A - B - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB B did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_C(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x99, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.c = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB C did not subtract A - C - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB C did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x9a, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.d = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB D did not subtract A - D - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x9b, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.e = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB E did not subtract A - E - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x9c, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.h = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB H did not subtract A - H - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x9d, 0x00, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.l = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB L did not subtract A - L - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SBB_M(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x9e, 0x00, 0x00, 0x00, 0x2233: 0x05})
+		cpu.flags.Set(Carry, true)
+		cpu.h = 0x22
+		cpu.l = 0x33
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBB M did not subtract A - M - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBB M did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Test_SBB_AWithCarrySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x9f, 0x00, 0x00, 0x00})
+	cpu.flags.Set(Carry, true)
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0xFF {
+		t.Errorf("SBB A did not subtract A - A - Carry correctly")
+	}
+
+	if cpu.flags.Get(Zero) {
+		t.Errorf("SBB A did not set the Zero flag correctly")
+	}
+
+	if !cpu.flags.Get(Carry) {
+		t.Errorf("SBB A did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_SBB_AWithCarryUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x9f, 0x00, 0x00, 0x00})
+	cpu.flags.Set(Carry, false)
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x00 {
+		t.Errorf("SBB A did not subtract A - A - Carry correctly")
+	}
+
+	if !cpu.flags.Get(Zero) {
+		t.Errorf("SBB A did not set the Zero flag correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("SBB A did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)

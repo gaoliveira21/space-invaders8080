@@ -197,14 +197,14 @@ func NewIntel8080() *Intel8080 {
 		0x95: {cpu._SUB_L, "SUB L", 1},
 		0x96: {cpu._SUB_M, "SUB M", 1},
 		0x97: {cpu._SUB_A, "SUB A", 1},
-		0x98: {cpu._NI, "Not Impl", 0},
-		0x99: {cpu._NI, "Not Impl", 0},
-		0x9a: {cpu._NI, "Not Impl", 0},
-		0x9b: {cpu._NI, "Not Impl", 0},
-		0x9c: {cpu._NI, "Not Impl", 0},
-		0x9d: {cpu._NI, "Not Impl", 0},
-		0x9e: {cpu._NI, "Not Impl", 0},
-		0x9f: {cpu._NI, "Not Impl", 0},
+		0x98: {cpu._SBB_B, "SBB B", 1},
+		0x99: {cpu._SBB_C, "SBB C", 1},
+		0x9a: {cpu._SBB_D, "SBB D", 1},
+		0x9b: {cpu._SBB_E, "SBB E", 1},
+		0x9c: {cpu._SBB_H, "SBB H", 1},
+		0x9d: {cpu._SBB_L, "SBB L", 1},
+		0x9e: {cpu._SBB_M, "SBB M", 1},
+		0x9f: {cpu._SBB_A, "SBB A", 1},
 
 		0xa0: {cpu._NI, "Not Impl", 0},
 		0xa1: {cpu._NI, "Not Impl", 0},
@@ -357,10 +357,10 @@ func (cpu *Intel8080) adc(value byte) {
 	cpu.add(value, carryVal)
 }
 
-func (cpu *Intel8080) sub(value byte) {
-	result := uint16(cpu.a) - uint16(value)
+func (cpu *Intel8080) sub(value byte, carry uint16) {
+	result := uint16(cpu.a) - uint16(value) - carry
 
-	cpu.flags.Set(Carry, cpu.a < value)
+	cpu.flags.Set(Carry, result>>8 > 0)
 	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
 
 	cpu.a = uint8(result & 0xFF)
@@ -368,6 +368,15 @@ func (cpu *Intel8080) sub(value byte) {
 	cpu.flags.Set(Zero, cpu.a == 0)
 	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
 	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) sbb(value byte) {
+	carryVal := uint16(0)
+	if cpu.flags.Get(Carry) {
+		carryVal = 1
+	}
+
+	cpu.sub(value, carryVal)
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1329,43 +1338,84 @@ func (cpu *Intel8080) _ADC_A() uint {
 }
 
 func (cpu *Intel8080) _SUB_B() uint {
-	cpu.sub(cpu.b)
+	cpu.sub(cpu.b, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_C() uint {
-	cpu.sub(cpu.c)
+	cpu.sub(cpu.c, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_D() uint {
-	cpu.sub(cpu.d)
+	cpu.sub(cpu.d, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_E() uint {
-	cpu.sub(cpu.e)
+	cpu.sub(cpu.e, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_H() uint {
-	cpu.sub(cpu.h)
+	cpu.sub(cpu.h, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_L() uint {
-	cpu.sub(cpu.l)
+	cpu.sub(cpu.l, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _SUB_M() uint {
 	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
-	cpu.sub(cpu.memory[addr])
+	cpu.sub(cpu.memory[addr], 0)
 	return 7
 }
 
 func (cpu *Intel8080) _SUB_A() uint {
-	cpu.sub(cpu.a)
+	cpu.sub(cpu.a, 0)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_B() uint {
+	cpu.sbb(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_C() uint {
+	cpu.sbb(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_D() uint {
+	cpu.sbb(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_E() uint {
+	cpu.sbb(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_H() uint {
+	cpu.sbb(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_L() uint {
+	cpu.sbb(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _SBB_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.sbb(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _SBB_A() uint {
+	cpu.sbb(cpu.a)
 	return 4
 }
 
