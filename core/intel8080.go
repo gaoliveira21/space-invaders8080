@@ -189,14 +189,14 @@ func NewIntel8080() *Intel8080 {
 		0x8e: {cpu._ADC_M, "ADC M", 1},
 		0x8f: {cpu._ADC_A, "ADC A", 1},
 
-		0x90: {cpu._NI, "Not Impl", 0},
-		0x91: {cpu._NI, "Not Impl", 0},
-		0x92: {cpu._NI, "Not Impl", 0},
-		0x93: {cpu._NI, "Not Impl", 0},
-		0x94: {cpu._NI, "Not Impl", 0},
-		0x95: {cpu._NI, "Not Impl", 0},
-		0x96: {cpu._NI, "Not Impl", 0},
-		0x97: {cpu._NI, "Not Impl", 0},
+		0x90: {cpu._SUB_B, "SUB B", 1},
+		0x91: {cpu._SUB_C, "SUB C", 1},
+		0x92: {cpu._SUB_D, "SUB D", 1},
+		0x93: {cpu._SUB_E, "SUB E", 1},
+		0x94: {cpu._SUB_H, "SUB H", 1},
+		0x95: {cpu._SUB_L, "SUB L", 1},
+		0x96: {cpu._SUB_M, "SUB M", 1},
+		0x97: {cpu._SUB_A, "SUB A", 1},
 		0x98: {cpu._NI, "Not Impl", 0},
 		0x99: {cpu._NI, "Not Impl", 0},
 		0x9a: {cpu._NI, "Not Impl", 0},
@@ -335,8 +335,8 @@ func hasParity(b byte) bool {
 	return bits.OnesCount8(b)%2 == 0
 }
 
-func (cpu *Intel8080) add(value byte) {
-	result := uint16(cpu.a) + uint16(value)
+func (cpu *Intel8080) add(value byte, carry uint16) {
+	result := uint16(cpu.a) + uint16(value) + carry
 
 	cpu.flags.Set(Carry, result > 0xFF)
 	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
@@ -354,9 +354,13 @@ func (cpu *Intel8080) adc(value byte) {
 		carryVal = 1
 	}
 
-	result := uint16(cpu.a) + uint16(value) + carryVal
+	cpu.add(value, carryVal)
+}
 
-	cpu.flags.Set(Carry, result > 0xFF)
+func (cpu *Intel8080) sub(value byte) {
+	result := uint16(cpu.a) - uint16(value)
+
+	cpu.flags.Set(Carry, cpu.a < value)
 	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
 
 	cpu.a = uint8(result & 0xFF)
@@ -1243,43 +1247,43 @@ func (cpu *Intel8080) _MOV_AA() uint {
 }
 
 func (cpu *Intel8080) _ADD_B() uint {
-	cpu.add(cpu.b)
+	cpu.add(cpu.b, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_C() uint {
-	cpu.add(cpu.c)
+	cpu.add(cpu.c, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_D() uint {
-	cpu.add(cpu.d)
+	cpu.add(cpu.d, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_E() uint {
-	cpu.add(cpu.e)
+	cpu.add(cpu.e, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_H() uint {
-	cpu.add(cpu.h)
+	cpu.add(cpu.h, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_L() uint {
-	cpu.add(cpu.l)
+	cpu.add(cpu.l, 0)
 	return 4
 }
 
 func (cpu *Intel8080) _ADD_M() uint {
 	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
-	cpu.add(cpu.memory[addr])
+	cpu.add(cpu.memory[addr], 0)
 	return 7
 }
 
 func (cpu *Intel8080) _ADD_A() uint {
-	cpu.add(cpu.a)
+	cpu.add(cpu.a, 0)
 	return 4
 }
 
@@ -1321,6 +1325,47 @@ func (cpu *Intel8080) _ADC_M() uint {
 
 func (cpu *Intel8080) _ADC_A() uint {
 	cpu.adc(cpu.a)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_B() uint {
+	cpu.sub(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_C() uint {
+	cpu.sub(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_D() uint {
+	cpu.sub(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_E() uint {
+	cpu.sub(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_H() uint {
+	cpu.sub(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_L() uint {
+	cpu.sub(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _SUB_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.sub(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _SUB_A() uint {
+	cpu.sub(cpu.a)
 	return 4
 }
 

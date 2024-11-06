@@ -2119,6 +2119,7 @@ func Fuzz_ADD_B(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2151,6 +2152,7 @@ func Fuzz_ADD_C(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2183,6 +2185,7 @@ func Fuzz_ADD_D(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2215,6 +2218,7 @@ func Fuzz_ADD_E(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2247,6 +2251,7 @@ func Fuzz_ADD_H(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2279,6 +2284,7 @@ func Fuzz_ADD_L(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2311,6 +2317,7 @@ func Fuzz_ADD_M(f *testing.F) {
 		{value: 0xFB, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2344,6 +2351,7 @@ func Fuzz_ADD_A(f *testing.F) {
 		{value: 0x80, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2375,6 +2383,7 @@ func Fuzz_ADC_B(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2408,6 +2417,7 @@ func Fuzz_ADC_C(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2441,6 +2451,7 @@ func Fuzz_ADC_D(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2474,6 +2485,7 @@ func Fuzz_ADC_E(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2507,6 +2519,7 @@ func Fuzz_ADC_H(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2540,6 +2553,7 @@ func Fuzz_ADC_L(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2573,6 +2587,7 @@ func Fuzz_ADC_M(f *testing.F) {
 		{value: 0xFA, flagName: "Zero", flagMask: Zero},
 		{value: 0x0A, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7A, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2607,6 +2622,7 @@ func Fuzz_ADC_A(f *testing.F) {
 		{value: 0x80, flagName: "Zero", flagMask: Zero},
 		{value: 0x0B, flagName: "AuxCarry", flagMask: AuxCarry},
 		{value: 0x7B, flagName: "Sign", flagMask: Sign},
+		{value: 0xFC, flagName: "Carry", flagMask: Carry},
 	}
 
 	for i := range tData {
@@ -2627,6 +2643,266 @@ func Fuzz_ADC_A(f *testing.F) {
 
 		if !cpu.flags.Get(d.flagMask) {
 			t.Errorf("ADC A did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_B(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x90, 0x00, 0x00, 0x00})
+		cpu.b = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB B did not subtract A - B correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB B did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_C(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x91, 0x00, 0x00, 0x00})
+		cpu.c = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB C did not subtract A - C correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB C did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x92, 0x00, 0x00, 0x00})
+		cpu.d = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB D did not subtract A - D correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x93, 0x00, 0x00, 0x00})
+		cpu.e = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB E did not subtract A - E correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x94, 0x00, 0x00, 0x00})
+		cpu.h = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB H did not subtract A - H correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x95, 0x00, 0x00, 0x00})
+		cpu.l = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB L did not subtract A - L correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_SUB_M(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x96, 0x00, 0x00, 0x00, 0x2233: 0x05})
+		cpu.h = 0x22
+		cpu.l = 0x33
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUB M did not subtract A - (HL) correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB M did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Fuzz_SUB_A(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0x97, 0x00, 0x00, 0x00})
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != 0 {
+			t.Errorf("SUB A did not subtract A - A correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUB A did not set the %s flag correctly", d.flagName)
 		}
 
 		assertCycles(t, cpu, 4)
