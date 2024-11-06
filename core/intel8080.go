@@ -214,14 +214,14 @@ func NewIntel8080() *Intel8080 {
 		0xa5: {cpu._ANA_L, "ANA L", 1},
 		0xa6: {cpu._ANA_M, "ANA M", 1},
 		0xa7: {cpu._ANA_A, "ANA A", 1},
-		0xa8: {cpu._NI, "Not Impl", 0},
-		0xa9: {cpu._NI, "Not Impl", 0},
-		0xaa: {cpu._NI, "Not Impl", 0},
-		0xab: {cpu._NI, "Not Impl", 0},
-		0xac: {cpu._NI, "Not Impl", 0},
-		0xad: {cpu._NI, "Not Impl", 0},
-		0xae: {cpu._NI, "Not Impl", 0},
-		0xaf: {cpu._NI, "Not Impl", 0},
+		0xa8: {cpu._XRA_B, "XRA B", 1},
+		0xa9: {cpu._XRA_C, "XRA C", 1},
+		0xaa: {cpu._XRA_D, "XRA D", 1},
+		0xab: {cpu._XRA_E, "XRA E", 1},
+		0xac: {cpu._XRA_H, "XRA H", 1},
+		0xad: {cpu._XRA_L, "XRA L", 1},
+		0xae: {cpu._XRA_M, "XRA M", 1},
+		0xaf: {cpu._XRA_A, "XRA A", 1},
 
 		0xb0: {cpu._NI, "Not Impl", 0},
 		0xb1: {cpu._NI, "Not Impl", 0},
@@ -387,6 +387,16 @@ func (cpu *Intel8080) ana(value byte) {
 
 	cpu.a = result
 
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) xra(value byte) {
+	cpu.a ^= value
+
+	cpu.flags.Set(AuxCarry, false)
+	cpu.flags.Set(Carry, false)
 	cpu.flags.Set(Zero, cpu.a == 0)
 	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
 	cpu.flags.Set(Parity, hasParity(cpu.a))
@@ -1470,6 +1480,47 @@ func (cpu *Intel8080) _ANA_M() uint {
 
 func (cpu *Intel8080) _ANA_A() uint {
 	cpu.ana(cpu.a)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_B() uint {
+	cpu.xra(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_C() uint {
+	cpu.xra(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_D() uint {
+	cpu.xra(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_E() uint {
+	cpu.xra(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_H() uint {
+	cpu.xra(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_L() uint {
+	cpu.xra(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _XRA_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.xra(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _XRA_A() uint {
+	cpu.xra(cpu.e)
 	return 4
 }
 

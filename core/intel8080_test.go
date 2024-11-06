@@ -3336,6 +3336,182 @@ func Test_ANA_A(t *testing.T) {
 	assertCycles(t, cpu, 4)
 }
 
+func Test_XRA_B(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa8, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.b = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA B did not A ^ B correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA B did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA B did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa9, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.c = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA C did not A ^ C correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA C did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA C did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xaa, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.d = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA D did not A ^ D correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA D did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA D did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_E(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xab, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.e = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA E did not A ^ E correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA E did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA E did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xac, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.h = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA H did not A ^ H correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA H did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA H did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_L(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xad, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.l = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA L did not A ^ L correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA L did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA L did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_XRA_M(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xae, 0x00, 0x00, 0x00, 0x2233: 0x09})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRA L did not A ^ L correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA L did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA L did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_XRA_A(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xaf, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x06 {
+		t.Errorf("XRA L did not A ^ L correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRA L did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRA L did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)
