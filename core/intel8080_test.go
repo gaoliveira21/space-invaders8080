@@ -3192,6 +3192,150 @@ func Test_SBB_AWithCarryUnset(t *testing.T) {
 	assertCycles(t, cpu, 4)
 }
 
+func Test_ANA_B(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa0, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.b = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA B did not A & B correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA B did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa1, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.c = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA C did not A & C correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA C did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa2, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.d = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA D did not A & D correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA D did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_E(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa3, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.e = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA E did not A & E correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA E did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa4, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.h = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA H did not A & H correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA H did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_L(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa5, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.l = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA L did not A & L correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA L did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ANA_M(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa6, 0x00, 0x00, 0x00, 0x2233: 0x09})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x0 {
+		t.Errorf("ANA M did not A & (HL) correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA M did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_ANA_A(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xa7, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x06 {
+		t.Errorf("ANA A did not A & A correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ANA A did not set the Carry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)

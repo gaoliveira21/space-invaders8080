@@ -206,14 +206,14 @@ func NewIntel8080() *Intel8080 {
 		0x9e: {cpu._SBB_M, "SBB M", 1},
 		0x9f: {cpu._SBB_A, "SBB A", 1},
 
-		0xa0: {cpu._NI, "Not Impl", 0},
-		0xa1: {cpu._NI, "Not Impl", 0},
-		0xa2: {cpu._NI, "Not Impl", 0},
-		0xa3: {cpu._NI, "Not Impl", 0},
-		0xa4: {cpu._NI, "Not Impl", 0},
-		0xa5: {cpu._NI, "Not Impl", 0},
-		0xa6: {cpu._NI, "Not Impl", 0},
-		0xa7: {cpu._NI, "Not Impl", 0},
+		0xa0: {cpu._ANA_B, "ANA B", 1},
+		0xa1: {cpu._ANA_C, "ANA C", 1},
+		0xa2: {cpu._ANA_D, "ANA D", 1},
+		0xa3: {cpu._ANA_E, "ANA E", 1},
+		0xa4: {cpu._ANA_H, "ANA H", 1},
+		0xa5: {cpu._ANA_L, "ANA L", 1},
+		0xa6: {cpu._ANA_M, "ANA M", 1},
+		0xa7: {cpu._ANA_A, "ANA A", 1},
 		0xa8: {cpu._NI, "Not Impl", 0},
 		0xa9: {cpu._NI, "Not Impl", 0},
 		0xaa: {cpu._NI, "Not Impl", 0},
@@ -377,6 +377,19 @@ func (cpu *Intel8080) sbb(value byte) {
 	}
 
 	cpu.sub(value, carryVal)
+}
+
+func (cpu *Intel8080) ana(value byte) {
+	result := cpu.a & value
+
+	cpu.flags.Set(AuxCarry, ((cpu.a|value)&0x08) != 0)
+	cpu.flags.Set(Carry, false)
+
+	cpu.a = result
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1416,6 +1429,47 @@ func (cpu *Intel8080) _SBB_M() uint {
 
 func (cpu *Intel8080) _SBB_A() uint {
 	cpu.sbb(cpu.a)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_B() uint {
+	cpu.ana(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_C() uint {
+	cpu.ana(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_D() uint {
+	cpu.ana(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_E() uint {
+	cpu.ana(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_H() uint {
+	cpu.ana(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_L() uint {
+	cpu.ana(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _ANA_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.ana(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _ANA_A() uint {
+	cpu.ana(cpu.a)
 	return 4
 }
 
