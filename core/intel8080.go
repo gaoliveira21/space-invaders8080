@@ -223,14 +223,14 @@ func NewIntel8080() *Intel8080 {
 		0xae: {cpu._XRA_M, "XRA M", 1},
 		0xaf: {cpu._XRA_A, "XRA A", 1},
 
-		0xb0: {cpu._NI, "Not Impl", 0},
-		0xb1: {cpu._NI, "Not Impl", 0},
-		0xb2: {cpu._NI, "Not Impl", 0},
-		0xb3: {cpu._NI, "Not Impl", 0},
-		0xb4: {cpu._NI, "Not Impl", 0},
-		0xb5: {cpu._NI, "Not Impl", 0},
-		0xb6: {cpu._NI, "Not Impl", 0},
-		0xb7: {cpu._NI, "Not Impl", 0},
+		0xb0: {cpu._ORA_B, "ORA B", 1},
+		0xb1: {cpu._ORA_C, "ORA C", 1},
+		0xb2: {cpu._ORA_D, "ORA D", 1},
+		0xb3: {cpu._ORA_E, "ORA E", 1},
+		0xb4: {cpu._ORA_H, "ORA H", 1},
+		0xb5: {cpu._ORA_L, "ORA L", 1},
+		0xb6: {cpu._ORA_M, "ORA M", 1},
+		0xb7: {cpu._ORA_A, "ORA A", 1},
 		0xb8: {cpu._NI, "Not Impl", 0},
 		0xb9: {cpu._NI, "Not Impl", 0},
 		0xba: {cpu._NI, "Not Impl", 0},
@@ -394,6 +394,16 @@ func (cpu *Intel8080) ana(value byte) {
 
 func (cpu *Intel8080) xra(value byte) {
 	cpu.a ^= value
+
+	cpu.flags.Set(AuxCarry, false)
+	cpu.flags.Set(Carry, false)
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) ora(value byte) {
+	cpu.a |= value
 
 	cpu.flags.Set(AuxCarry, false)
 	cpu.flags.Set(Carry, false)
@@ -1521,6 +1531,47 @@ func (cpu *Intel8080) _XRA_M() uint {
 
 func (cpu *Intel8080) _XRA_A() uint {
 	cpu.xra(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_B() uint {
+	cpu.ora(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_C() uint {
+	cpu.ora(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_D() uint {
+	cpu.ora(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_E() uint {
+	cpu.ora(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_H() uint {
+	cpu.ora(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_L() uint {
+	cpu.ora(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _ORA_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.ora(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _ORA_A() uint {
+	cpu.ora(cpu.a)
 	return 4
 }
 

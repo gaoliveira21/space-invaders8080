@@ -3512,6 +3512,182 @@ func Test_XRA_A(t *testing.T) {
 	assertCycles(t, cpu, 4)
 }
 
+func Test_ORA_B(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb0, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.b = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA B did not A | B correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA B did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA B did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_C(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb1, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.c = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA C did not A | C correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA C did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA C did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb2, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.d = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA D did not A | D correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA D did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA D did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_E(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb3, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.e = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA E did not A | E correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA E did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA E did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb4, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.h = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA H did not A | H correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA H did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA H did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_L(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb5, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+	cpu.l = 0x09
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA L did not A | L correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA L did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA L did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_ORA_M(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb6, 0x00, 0x00, 0x00, 0x2233: 0x09})
+	cpu.h = 0x22
+	cpu.l = 0x33
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORA M did not A | (HL) correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA M did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA M did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_ORA_A(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xb7, 0x00, 0x00, 0x00})
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x06 {
+		t.Errorf("ORA A did not A | A correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORA A did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORA A did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)
