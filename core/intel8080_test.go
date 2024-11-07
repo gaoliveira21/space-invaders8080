@@ -3688,6 +3688,266 @@ func Test_ORA_A(t *testing.T) {
 	assertCycles(t, cpu, 4)
 }
 
+func Fuzz_CMP_B(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xb8, 0x00, 0x00, 0x00})
+		cpu.b = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP B changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP B did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_C(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xb9, 0x00, 0x00, 0x00})
+		cpu.c = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP C changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP C did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_D(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xba, 0x00, 0x00, 0x00})
+		cpu.d = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP D changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP D did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_E(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xbb, 0x00, 0x00, 0x00})
+		cpu.e = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP E changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP E did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_H(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xbc, 0x00, 0x00, 0x00})
+		cpu.h = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP H changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP H did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_L(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xbd, 0x00, 0x00, 0x00})
+		cpu.l = 0x05
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP L changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP L did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
+func Fuzz_CMP_M(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xbe, 0x00, 0x00, 0x00, 0x2233: 0x05})
+		cpu.h = 0x22
+		cpu.l = 0x33
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP M changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP M did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Fuzz_CMP_A(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xbf, 0x00, 0x00, 0x00})
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value {
+			t.Errorf("CMP A changed A register")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("CMP A did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 4)
+	})
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)

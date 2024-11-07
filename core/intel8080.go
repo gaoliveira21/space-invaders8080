@@ -231,14 +231,14 @@ func NewIntel8080() *Intel8080 {
 		0xb5: {cpu._ORA_L, "ORA L", 1},
 		0xb6: {cpu._ORA_M, "ORA M", 1},
 		0xb7: {cpu._ORA_A, "ORA A", 1},
-		0xb8: {cpu._NI, "Not Impl", 0},
-		0xb9: {cpu._NI, "Not Impl", 0},
-		0xba: {cpu._NI, "Not Impl", 0},
-		0xbb: {cpu._NI, "Not Impl", 0},
-		0xbc: {cpu._NI, "Not Impl", 0},
-		0xbd: {cpu._NI, "Not Impl", 0},
-		0xbe: {cpu._NI, "Not Impl", 0},
-		0xbf: {cpu._NI, "Not Impl", 0},
+		0xb8: {cpu._CMP_B, "CMP B", 1},
+		0xb9: {cpu._CMP_C, "CMP C", 1},
+		0xba: {cpu._CMP_D, "CMP D", 1},
+		0xbb: {cpu._CMP_E, "CMP E", 1},
+		0xbc: {cpu._CMP_H, "CMP H", 1},
+		0xbd: {cpu._CMP_L, "CMP L", 1},
+		0xbe: {cpu._CMP_M, "CMP M", 1},
+		0xbf: {cpu._CMP_A, "CMP A", 1},
 
 		0xc0: {cpu._NI, "Not Impl", 0},
 		0xc1: {cpu._NI, "Not Impl", 0},
@@ -410,6 +410,17 @@ func (cpu *Intel8080) ora(value byte) {
 	cpu.flags.Set(Zero, cpu.a == 0)
 	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
 	cpu.flags.Set(Parity, hasParity(cpu.a))
+}
+
+func (cpu *Intel8080) cmp(value byte) {
+	result := uint16(cpu.a) - uint16(value)
+
+	cpu.flags.Set(Carry, result>>8 > 0)
+	cpu.flags.Set(AuxCarry, ((cpu.a^uint8(result)^value)&0x10) > 0)
+
+	cpu.flags.Set(Zero, uint8(result) == 0)
+	cpu.flags.Set(Sign, uint8(result)&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(uint8(result)))
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1572,6 +1583,47 @@ func (cpu *Intel8080) _ORA_M() uint {
 
 func (cpu *Intel8080) _ORA_A() uint {
 	cpu.ora(cpu.a)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_B() uint {
+	cpu.cmp(cpu.b)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_C() uint {
+	cpu.cmp(cpu.c)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_D() uint {
+	cpu.cmp(cpu.d)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_E() uint {
+	cpu.cmp(cpu.e)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_H() uint {
+	cpu.cmp(cpu.h)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_L() uint {
+	cpu.cmp(cpu.l)
+	return 4
+}
+
+func (cpu *Intel8080) _CMP_M() uint {
+	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
+	cpu.cmp(cpu.memory[addr])
+	return 7
+}
+
+func (cpu *Intel8080) _CMP_A() uint {
+	cpu.cmp(cpu.a)
 	return 4
 }
 
