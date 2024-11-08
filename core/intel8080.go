@@ -240,12 +240,12 @@ func NewIntel8080() *Intel8080 {
 		0xbe: {cpu._CMP_M, "CMP M", 1},
 		0xbf: {cpu._CMP_A, "CMP A", 1},
 
-		0xc0: {cpu._NI, "Not Impl", 0},
-		0xc1: {cpu._NI, "Not Impl", 0},
+		0xc0: {cpu._RNZ, "RNZ", 1},
+		0xc1: {cpu._POP_B, "POP B", 1},
 		0xc2: {cpu._JNZ, "JNZ addr", 3},
 		0xc3: {cpu._JMP, "JMP addr", 3},
-		0xc4: {cpu._NI, "Not Impl", 0},
-		0xc5: {cpu._NI, "Not Impl", 0},
+		0xc4: {cpu._CNZ, "CNZ", 3},
+		0xc5: {cpu._PUSH_B, "PUSH B", 1},
 		0xc6: {cpu._NI, "Not Impl", 0},
 		0xc7: {cpu._NI, "Not Impl", 0},
 		0xc8: {cpu._NI, "Not Impl", 0},
@@ -421,6 +421,43 @@ func (cpu *Intel8080) cmp(value byte) {
 	cpu.flags.Set(Zero, uint8(result) == 0)
 	cpu.flags.Set(Sign, uint8(result)&0x80 != 0)
 	cpu.flags.Set(Parity, hasParity(uint8(result)))
+}
+
+func (cpu *Intel8080) ret() {
+	lb, hb := uint16(cpu.memory[cpu.sp]), uint16(cpu.memory[cpu.sp+1])
+	cpu.sp += 2
+	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) pop() (hb byte, lb byte) {
+	lob, hib := cpu.memory[cpu.sp], cpu.memory[cpu.sp+1]
+	cpu.sp += 2
+
+	return hib, lob
+}
+
+func (cpu *Intel8080) push(hb byte, lb byte) {
+	cpu.memory[cpu.sp-1] = hb
+	cpu.memory[cpu.sp-2] = lb
+	cpu.sp -= 2
+}
+
+func (cpu *Intel8080) call() {
+	lb, hb := uint16(cpu.memory[cpu.pc]), uint16(cpu.memory[cpu.pc+1])
+
+	ret := cpu.pc + 2
+	cpu.memory[cpu.sp-1] = uint8((ret >> 8) & 0xff)
+	cpu.memory[cpu.sp-2] = uint8(ret & 0xff)
+	cpu.sp -= 2
+
+	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) jump() {
+	lb := uint16(cpu.memory[cpu.pc])
+	hb := uint16(cpu.memory[cpu.pc+1])
+
+	cpu.pc = (hb << 8) | lb
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1627,12 +1664,36 @@ func (cpu *Intel8080) _CMP_A() uint {
 	return 4
 }
 
+func (cpu *Intel8080) _RNZ() uint {
+	if !cpu.flags.Get(Zero) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _POP_B() uint {
+	cpu.b, cpu.c = cpu.pop()
+	return 10
+}
+
+func (cpu *Intel8080) _CNZ() uint {
+	if !cpu.flags.Get(Zero) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _PUSH_B() uint {
+	cpu.push(cpu.b, cpu.c)
+	return 11
+}
+
 func (cpu *Intel8080) _JNZ() uint {
 	if cpu.flags.Get(Zero) {
-		lb := uint16(cpu.memory[cpu.pc])
-		hb := uint16(cpu.memory[cpu.pc+1])
-
-		cpu.pc = (hb << 8) | lb
+		cpu.jump()
 	} else {
 		cpu.pc += 2
 	}
@@ -1641,31 +1702,17 @@ func (cpu *Intel8080) _JNZ() uint {
 }
 
 func (cpu *Intel8080) _JMP() uint {
-	lb := uint16(cpu.memory[cpu.pc])
-	hb := uint16(cpu.memory[cpu.pc+1])
-
-	cpu.pc = (hb << 8) | lb
-
+	cpu.jump()
 	return 10
 }
 
 func (cpu *Intel8080) _RET() uint {
-	lb, hb := uint16(cpu.memory[cpu.sp]), uint16(cpu.memory[cpu.sp+1])
-	cpu.sp += 2
-	cpu.pc = (hb << 8) | lb
-
+	cpu.ret()
 	return 10
 }
 
 func (cpu *Intel8080) _CALL() uint {
-	ret := cpu.pc + 2
-	cpu.memory[cpu.sp-1] = uint8((ret >> 8) & 0xff)
-	cpu.memory[cpu.sp-2] = uint8(ret & 0xff)
-	cpu.sp -= 2
-
-	lb, hb := uint16(cpu.memory[cpu.pc]), uint16(cpu.memory[cpu.pc+1])
-	cpu.pc = (hb << 8) | lb
-
+	cpu.call()
 	return 17
 }
 

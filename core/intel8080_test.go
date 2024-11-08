@@ -3948,6 +3948,112 @@ func Fuzz_CMP_A(f *testing.F) {
 	})
 }
 
+func Test_RNZWithZeroUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Zero, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RNZ did not set PC correctly when Zero flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RNZ did not set SP correctly when Zero flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RNZWithZeroSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Zero, true)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RNZ modified PC when Zero flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RNZ modified SP when Zero flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_POP_B(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc1, 0x34, 0x12})
+	cpu.sp = 1
+
+	cpu.Run()
+
+	if cpu.b != 0x12 {
+		t.Errorf("POP B did not set B register correctly")
+	}
+	if cpu.c != 0x34 {
+		t.Errorf("POP B did not set C register correctly")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RNZ did not set SP correctly")
+	}
+	assertCycles(t, cpu, 10)
+}
+
+func Test_CNZWithZeroUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Zero, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CNZ did not set PC correctly when Zero flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CNZ did not set SP correctly when Zero flag was not set")
+	}
+	// Check if return address was pushed to stack correctly
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CNZ did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CNZWithZeroSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Zero, true)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CNZ did not increment PC correctly when Zero flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CNZ modified SP when Zero flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_PUSH_B(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xc5, 0x0, 0x0, 0x0, 0x0})
+	cpu.sp = 4
+	cpu.b = 0x12
+	cpu.c = 0x34
+
+	cpu.Run()
+
+	if cpu.memory[2] != 0x34 {
+		t.Errorf("PUSH B did not store C correctly")
+	}
+	if cpu.memory[3] != 0x12 {
+		t.Errorf("PUSH B did not store B correctly")
+	}
+	if cpu.sp != 2 {
+		t.Errorf("PUSH B did not decrement SP correctly")
+	}
+	assertCycles(t, cpu, 11)
+}
+
 func Test_JNZ_ZeroFlagSet(t *testing.T) {
 	cpu := createCPUWithProgramLoaded([]byte{0xc2, 0x88, 0xff})
 	cpu.flags.Set(Zero, true)
