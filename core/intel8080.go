@@ -246,19 +246,19 @@ func NewIntel8080() *Intel8080 {
 		0xc3: {cpu._JMP, "JMP addr", 3},
 		0xc4: {cpu._CNZ, "CNZ", 3},
 		0xc5: {cpu._PUSH_B, "PUSH B", 1},
-		0xc6: {cpu._NI, "Not Impl", 0},
-		0xc7: {cpu._NI, "Not Impl", 0},
-		0xc8: {cpu._NI, "Not Impl", 0},
+		0xc6: {cpu._ADI, "ADI", 2},
+		0xc7: {cpu._RST_0, "RST 0", 1},
+		0xc8: {cpu._RZ, "RZ", 1},
 		0xc9: {cpu._RET, "RET", 1},
-		0xca: {cpu._NI, "Not Impl", 0},
-		0xcb: {cpu._NI, "Not Impl", 0},
-		0xcc: {cpu._NI, "Not Impl", 0},
+		0xca: {cpu._JZ, "JZ", 1},
+		0xcb: {cpu._JMP, "*JMP", 3},
+		0xcc: {cpu._CZ, "CZ", 3},
 		0xcd: {cpu._CALL, "CALL addr", 3},
-		0xce: {cpu._NI, "Not Impl", 0},
-		0xcf: {cpu._NI, "Not Impl", 0},
+		0xce: {cpu._ACI, "ACI", 2},
+		0xcf: {cpu._RST_1, "RST 1", 1},
 
-		0xd0: {cpu._NI, "Not Impl", 0},
-		0xd1: {cpu._NI, "Not Impl", 0},
+		0xd0: {cpu._RNC, "RNC", 1},
+		0xd1: {cpu._POP_D, "POP D", 1},
 		0xd2: {cpu._NI, "Not Impl", 0},
 		0xd3: {cpu._NI, "Not Impl", 0}, // IO and Special Group
 		0xd4: {cpu._NI, "Not Impl", 0},
@@ -458,6 +458,15 @@ func (cpu *Intel8080) jump() {
 	hb := uint16(cpu.memory[cpu.pc+1])
 
 	cpu.pc = (hb << 8) | lb
+}
+
+func (cpu *Intel8080) rst(addr uint16) {
+	ret := cpu.pc
+	cpu.memory[cpu.sp-1] = uint8((ret >> 8) & 0xFF)
+	cpu.memory[cpu.sp-2] = uint8(ret & 0xFF)
+	cpu.sp -= 2
+
+	cpu.pc = addr
 }
 
 func (cpu *Intel8080) _NI() uint {
@@ -1677,6 +1686,21 @@ func (cpu *Intel8080) _POP_B() uint {
 	return 10
 }
 
+func (cpu *Intel8080) _JNZ() uint {
+	if !cpu.flags.Get(Zero) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _JMP() uint {
+	cpu.jump()
+	return 10
+}
+
 func (cpu *Intel8080) _CNZ() uint {
 	if !cpu.flags.Get(Zero) {
 		cpu.call()
@@ -1691,7 +1715,32 @@ func (cpu *Intel8080) _PUSH_B() uint {
 	return 11
 }
 
-func (cpu *Intel8080) _JNZ() uint {
+func (cpu *Intel8080) _ADI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.add(value, 0)
+	return 7
+}
+
+func (cpu *Intel8080) _RST_0() uint {
+	cpu.rst(0x0000)
+	return 11
+}
+
+func (cpu *Intel8080) _RZ() uint {
+	if cpu.flags.Get(Zero) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _RET() uint {
+	cpu.ret()
+	return 10
+}
+
+func (cpu *Intel8080) _JZ() uint {
 	if cpu.flags.Get(Zero) {
 		cpu.jump()
 	} else {
@@ -1701,19 +1750,43 @@ func (cpu *Intel8080) _JNZ() uint {
 	return 10
 }
 
-func (cpu *Intel8080) _JMP() uint {
-	cpu.jump()
-	return 10
+func (cpu *Intel8080) _CZ() uint {
+	if cpu.flags.Get(Zero) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
 }
 
-func (cpu *Intel8080) _RET() uint {
-	cpu.ret()
-	return 10
+func (cpu *Intel8080) _ACI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.adc(value)
+	return 7
 }
 
 func (cpu *Intel8080) _CALL() uint {
 	cpu.call()
 	return 17
+}
+
+func (cpu *Intel8080) _RST_1() uint {
+	cpu.rst(0x0008)
+	return 11
+}
+
+func (cpu *Intel8080) _RNC() uint {
+	if !cpu.flags.Get(Carry) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _POP_D() uint {
+	cpu.d, cpu.e = cpu.pop()
+	return 10
 }
 
 func (cpu *Intel8080) _ANI() uint {
