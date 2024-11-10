@@ -28,6 +28,9 @@ type Intel8080 struct {
 
 	memory       [0x4000]byte
 	instructions [256]*Intel8080Instruction
+
+	InterruptEnabled        bool
+	enableInterruptDeferred bool
 }
 
 func NewIntel8080() *Intel8080 {
@@ -161,7 +164,7 @@ func NewIntel8080() *Intel8080 {
 		0x73: {cpu._MOV_ME, "MOV M,E", 1},
 		0x74: {cpu._MOV_MH, "MOV M,H", 1},
 		0x75: {cpu._MOV_ML, "MOV M,L", 1},
-		0x76: {cpu._NI, "Not Impl", 0}, // IO and Special Group
+		0x76: {cpu._HLT, "HLT", 1},
 		0x77: {cpu._MOV_MA, "MOV M,A", 1},
 		0x78: {cpu._MOV_AB, "MOV A,B", 1},
 		0x79: {cpu._MOV_AC, "MOV A,C", 1},
@@ -259,54 +262,54 @@ func NewIntel8080() *Intel8080 {
 
 		0xd0: {cpu._RNC, "RNC", 1},
 		0xd1: {cpu._POP_D, "POP D", 1},
-		0xd2: {cpu._NI, "Not Impl", 0},
-		0xd3: {cpu._NI, "Not Impl", 0}, // IO and Special Group
-		0xd4: {cpu._NI, "Not Impl", 0},
-		0xd5: {cpu._NI, "Not Impl", 0},
-		0xd6: {cpu._NI, "Not Impl", 0},
-		0xd7: {cpu._NI, "Not Impl", 0},
-		0xd8: {cpu._NI, "Not Impl", 0},
-		0xd9: {cpu._NI, "Not Impl", 0},
-		0xda: {cpu._NI, "Not Impl", 0},
-		0xdb: {cpu._NI, "Not Impl", 0}, // IO and Special Group
-		0xdc: {cpu._NI, "Not Impl", 0},
-		0xdd: {cpu._NI, "Not Impl", 0},
-		0xde: {cpu._NI, "Not Impl", 0},
-		0xdf: {cpu._NI, "Not Impl", 0},
+		0xd2: {cpu._JNC, "JNC", 3},
+		0xd3: {cpu._OUT, "OUT", 2},
+		0xd4: {cpu._CNC, "CNC", 3},
+		0xd5: {cpu._PUSH_D, "PUSH D", 1},
+		0xd6: {cpu._SUI, "SUI", 2},
+		0xd7: {cpu._RST_2, "RST 2", 1},
+		0xd8: {cpu._RC, "RC", 1},
+		0xd9: {cpu._RET, "*RET", 1},
+		0xda: {cpu._JC, "JC", 3},
+		0xdb: {cpu._IN, "IN", 2},
+		0xdc: {cpu._CC, "CC", 3},
+		0xdd: {cpu._CALL, "*CALL", 3},
+		0xde: {cpu._SBI, "SBI", 2},
+		0xdf: {cpu._RST_3, "RST 3", 1},
 
-		0xe0: {cpu._NI, "Not Impl", 0},
-		0xe1: {cpu._NI, "Not Impl", 0},
-		0xe2: {cpu._NI, "Not Impl", 0},
-		0xe3: {cpu._NI, "Not Impl", 0},
-		0xe4: {cpu._NI, "Not Impl", 0},
-		0xe5: {cpu._NI, "Not Impl", 0},
+		0xe0: {cpu._RPO, "RPO", 1},
+		0xe1: {cpu._POP_H, "POP H", 1},
+		0xe2: {cpu._JPO, "JPO", 3},
+		0xe3: {cpu._XTHL, "XTHL", 1},
+		0xe4: {cpu._CPO, "CPO", 3},
+		0xe5: {cpu._PUSH_H, "PUSH H", 1},
 		0xe6: {cpu._ANI, "ANI", 2},
-		0xe7: {cpu._NI, "Not Impl", 0},
-		0xe8: {cpu._NI, "Not Impl", 0},
-		0xe9: {cpu._NI, "Not Impl", 0},
-		0xea: {cpu._NI, "Not Impl", 0},
-		0xeb: {cpu._NI, "Not Impl", 0},
-		0xec: {cpu._NI, "Not Impl", 0},
-		0xed: {cpu._NI, "Not Impl", 0},
-		0xee: {cpu._NI, "Not Impl", 0},
-		0xef: {cpu._NI, "Not Impl", 0},
+		0xe7: {cpu._RST_4, "RST 4", 1},
+		0xe8: {cpu._RPE, "RPE", 1},
+		0xe9: {cpu._PCHL, "PCHL", 1},
+		0xea: {cpu._JPE, "JPE", 3},
+		0xeb: {cpu._XCHG, "XCHG", 1},
+		0xec: {cpu._CPE, "CPE", 3},
+		0xed: {cpu._CALL, "*CALL", 3},
+		0xee: {cpu._XRI, "XRI", 2},
+		0xef: {cpu._RST_5, "RST 5", 1},
 
-		0xf0: {cpu._NI, "Not Impl", 0},
-		0xf1: {cpu._NI, "Not Impl", 0},
-		0xf2: {cpu._NI, "Not Impl", 0},
-		0xf3: {cpu._NI, "Not Impl", 0}, // IO and Special Group
-		0xf4: {cpu._NI, "Not Impl", 0},
-		0xf5: {cpu._NI, "Not Impl", 0},
-		0xf6: {cpu._NI, "Not Impl", 0},
-		0xf7: {cpu._NI, "Not Impl", 0},
-		0xf8: {cpu._NI, "Not Impl", 0},
-		0xf9: {cpu._NI, "Not Impl", 0},
-		0xfa: {cpu._NI, "Not Impl", 0},
-		0xfb: {cpu._NI, "Not Impl", 0}, // IO and Special Group
-		0xfc: {cpu._NI, "Not Impl", 0},
-		0xfd: {cpu._NI, "Not Impl", 0},
+		0xf0: {cpu._RP, "RP", 1},
+		0xf1: {cpu._POP_PSW, "POP PSW", 1},
+		0xf2: {cpu._JP, "JP", 3},
+		0xf3: {cpu._DI, "DI", 1},
+		0xf4: {cpu._CP, "CP", 3},
+		0xf5: {cpu._PUSH_PSW, "PUSH PSW", 1},
+		0xf6: {cpu._ORI, "ORI", 2},
+		0xf7: {cpu._RST_6, "RST 6", 1},
+		0xf8: {cpu._RM, "RM", 1},
+		0xf9: {cpu._SPHL, "SPHL", 1},
+		0xfa: {cpu._JM, "JM", 3},
+		0xfb: {cpu._EI, "EI", 1},
+		0xfc: {cpu._CM, "CM", 3},
+		0xfd: {cpu._CALL, "*CALL", 3},
 		0xfe: {cpu._CPI, "CPI", 2},
-		0xff: {cpu._NI, "Not Impl", 0},
+		0xff: {cpu._RST_7, "RST 7", 1},
 	}
 
 	return cpu
@@ -323,6 +326,11 @@ func (cpu *Intel8080) LoadProgram(program []byte) {
 func (cpu *Intel8080) Run() {
 	opcode := cpu.memory[cpu.pc]
 	cpu.pc++
+
+	if cpu.enableInterruptDeferred {
+		cpu.enableInterruptDeferred = false
+		cpu.InterruptEnabled = true
+	}
 
 	instruction := cpu.instructions[opcode]
 	log.Printf("%s Size=%d", instruction.mnemonic, instruction.size)
@@ -1298,6 +1306,11 @@ func (cpu *Intel8080) _MOV_ML() uint {
 	return 7
 }
 
+func (cpu *Intel8080) _HLT() uint {
+	// Note: It starts an infinite loop here
+	return 7
+}
+
 func (cpu *Intel8080) _MOV_MA() uint {
 	addr := uint16(cpu.h)<<8 | uint16(cpu.l)
 	cpu.memory[addr] = cpu.a
@@ -1789,33 +1802,331 @@ func (cpu *Intel8080) _POP_D() uint {
 	return 10
 }
 
-func (cpu *Intel8080) _ANI() uint {
-	x := cpu.a & cpu.memory[cpu.pc]
+func (cpu *Intel8080) _JNC() uint {
+	if !cpu.flags.Get(Carry) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
 
-	cpu.flags.Set(Carry, false)
-	cpu.flags.Set(AuxCarry, false)
+	return 10
+}
 
-	cpu.flags.Set(Zero, x == 0)
-	cpu.flags.Set(Sign, x&0x80 != 0)
-	cpu.flags.Set(Parity, hasParity(x))
-
-	cpu.a = x
+func (cpu *Intel8080) _OUT() uint {
+	//TODO: Revisiting this later to implement it correctly
 	cpu.pc++
+	return 10
+}
 
+func (cpu *Intel8080) _CNC() uint {
+	if !cpu.flags.Get(Carry) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _PUSH_D() uint {
+	cpu.push(cpu.d, cpu.e)
+	return 11
+}
+
+func (cpu *Intel8080) _SUI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.sub(value, 0)
 	return 7
+}
+
+func (cpu *Intel8080) _RST_2() uint {
+	cpu.rst(0x0010)
+	return 11
+}
+
+func (cpu *Intel8080) _RC() uint {
+	if cpu.flags.Get(Carry) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _JC() uint {
+	if cpu.flags.Get(Carry) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _IN() uint {
+	//TODO: Revisiting this later to implement it correctly
+	cpu.pc++
+	return 10
+}
+
+func (cpu *Intel8080) _CC() uint {
+	if cpu.flags.Get(Carry) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _SBI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.sbb(value)
+	return 7
+}
+
+func (cpu *Intel8080) _RST_3() uint {
+	cpu.rst(0x0018)
+	return 11
+}
+
+func (cpu *Intel8080) _RPO() uint {
+	if !cpu.flags.Get(Parity) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _POP_H() uint {
+	cpu.h, cpu.l = cpu.pop()
+	return 10
+}
+
+func (cpu *Intel8080) _JPO() uint {
+	if !cpu.flags.Get(Parity) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _XTHL() uint {
+	stackLb := cpu.memory[cpu.sp]
+	stackHb := cpu.memory[cpu.sp+1]
+	cpu.memory[cpu.sp] = cpu.l
+	cpu.memory[cpu.sp+1] = cpu.h
+	cpu.l = stackLb
+	cpu.h = stackHb
+	return 18
+}
+
+func (cpu *Intel8080) _CPO() uint {
+	if !cpu.flags.Get(Parity) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _PUSH_H() uint {
+	cpu.push(cpu.h, cpu.l)
+	return 11
+}
+
+func (cpu *Intel8080) _ANI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.ana(value)
+	return 7
+}
+
+func (cpu *Intel8080) _RST_4() uint {
+	cpu.rst(0x0020)
+	return 11
+}
+
+func (cpu *Intel8080) _RPE() uint {
+	if cpu.flags.Get(Parity) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _PCHL() uint {
+	cpu.pc = uint16(cpu.h)<<8 | uint16(cpu.l)
+	return 5
+}
+
+func (cpu *Intel8080) _JPE() uint {
+	if cpu.flags.Get(Parity) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _XCHG() uint {
+	tmpD := cpu.d
+	tmpE := cpu.e
+	cpu.d = cpu.h
+	cpu.e = cpu.l
+	cpu.h = tmpD
+	cpu.l = tmpE
+	return 5
+}
+
+func (cpu *Intel8080) _CPE() uint {
+	if cpu.flags.Get(Parity) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _XRI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.xra(value)
+	return 7
+}
+
+func (cpu *Intel8080) _RST_5() uint {
+	cpu.rst(0x0028)
+	return 11
+}
+
+func (cpu *Intel8080) _RP() uint {
+	if !cpu.flags.Get(Sign) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _POP_PSW() uint {
+	hb, psw := cpu.pop()
+	cpu.a = hb
+	cpu.flags.Set(Sign, (psw>>7&0b1) > 0)
+	cpu.flags.Set(Zero, (psw>>6&0b1) > 0)
+	cpu.flags.Set(AuxCarry, (psw>>4&0b1) > 0)
+	cpu.flags.Set(Parity, (psw>>2&0b1) > 0)
+	cpu.flags.Set(Carry, (psw>>0&0b1) > 0)
+	return 10
+}
+
+func (cpu *Intel8080) _JP() uint {
+	if !cpu.flags.Get(Sign) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _DI() uint {
+	cpu.InterruptEnabled = false
+	return 4
+}
+
+func (cpu *Intel8080) _CP() uint {
+	if !cpu.flags.Get(Sign) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
+}
+
+func (cpu *Intel8080) _PUSH_PSW() uint {
+	// S, Z, 0, AC, 0, P, 1, CY
+	status := uint8(0b00000010)
+	if cpu.flags.Get(Sign) {
+		status |= 1 << 7
+	}
+	if cpu.flags.Get(Zero) {
+		status |= 1 << 6
+	}
+	if cpu.flags.Get(AuxCarry) {
+		status |= 1 << 4
+	}
+	if cpu.flags.Get(Parity) {
+		status |= 1 << 2
+	}
+	if cpu.flags.Get(Carry) {
+		status |= 1 << 0
+	}
+
+	cpu.push(cpu.a, status)
+
+	return 11
+}
+
+func (cpu *Intel8080) _ORI() uint {
+	value := cpu.memory[cpu.pc]
+	cpu.pc++
+	cpu.ora(value)
+	return 7
+}
+
+func (cpu *Intel8080) _RST_6() uint {
+	cpu.rst(0x0030)
+	return 11
+}
+
+func (cpu *Intel8080) _RM() uint {
+	if cpu.flags.Get(Sign) {
+		cpu.ret()
+		return 11
+	}
+	return 5
+}
+
+func (cpu *Intel8080) _SPHL() uint {
+	cpu.sp = uint16(cpu.h)<<8 | uint16(cpu.l)
+	return 5
+}
+
+func (cpu *Intel8080) _JM() uint {
+	if cpu.flags.Get(Sign) {
+		cpu.jump()
+	} else {
+		cpu.pc += 2
+	}
+
+	return 10
+}
+
+func (cpu *Intel8080) _EI() uint {
+	// Note: interrupt enable is deferred until the next instruction has completed
+	cpu.enableInterruptDeferred = true
+	return 4
+}
+
+func (cpu *Intel8080) _CM() uint {
+	if cpu.flags.Get(Sign) {
+		cpu.call()
+		return 17
+	}
+	cpu.pc += 2
+	return 11
 }
 
 func (cpu *Intel8080) _CPI() uint {
 	value := cpu.memory[cpu.pc]
-	result := cpu.a - value
-
-	cpu.flags.Set(Zero, result == 0)
-	cpu.flags.Set(Sign, result&0x80 != 0)
-	cpu.flags.Set(Parity, hasParity(result))
-	cpu.flags.Set(Carry, cpu.a < value)
-	cpu.flags.Set(AuxCarry, (cpu.a&0xf) < (value&0xf))
-
 	cpu.pc++
-
+	cpu.cmp(value)
 	return 7
+}
+
+func (cpu *Intel8080) _RST_7() uint {
+	cpu.rst(0x0038)
+	return 11
 }

@@ -4341,10 +4341,10 @@ func Test_RNCWithCarryUnset(t *testing.T) {
 	cpu.Run()
 
 	if cpu.pc != 0x1234 {
-		t.Errorf("RNC did not set PC correctly when Zero flag was not set")
+		t.Errorf("RNC did not set PC correctly when Carry flag was not set")
 	}
 	if cpu.sp != 3 {
-		t.Errorf("RNC did not set SP correctly when Zero flag was not set")
+		t.Errorf("RNC did not set SP correctly when Carry flag was not set")
 	}
 	assertCycles(t, cpu, 11)
 }
@@ -4357,10 +4357,10 @@ func Test_RNCWithCarrySet(t *testing.T) {
 	cpu.Run()
 
 	if cpu.pc != 1 {
-		t.Errorf("RNC modified PC when Zero flag was set")
+		t.Errorf("RNC modified PC when Carry flag was set")
 	}
 	if cpu.sp != 1 {
-		t.Errorf("RNC modified SP when Zero flag was set")
+		t.Errorf("RNC modified SP when Carry flag was set")
 	}
 	assertCycles(t, cpu, 5)
 }
@@ -4381,6 +4381,463 @@ func Test_POP_D(t *testing.T) {
 		t.Errorf("POP D did not set SP correctly")
 	}
 	assertCycles(t, cpu, 10)
+}
+
+func Test_JNC_CarryFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd2, 0x88, 0xff})
+	cpu.flags.Set(Carry, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JNC dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JNC_CarryFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd2, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JNC dit not set pc correctly")
+	}
+}
+
+func Test_OUT(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd3, 0x88, 0x01, 0x01})
+
+	cpu.Run()
+
+	if cpu.pc != 0x0002 {
+		t.Errorf("OUT dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_CNCWithCarryUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Carry, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CNC did not set PC correctly when Carry flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CNC did not set SP correctly when Carry flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CNC did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CNCWithCarrySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CNC did not increment PC correctly when Carry flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CNC modified SP when Carry flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_PUSH_D(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd5, 0x0, 0x0, 0x0, 0x0})
+	cpu.sp = 4
+	cpu.d = 0x12
+	cpu.e = 0x34
+
+	cpu.Run()
+
+	if cpu.memory[2] != 0x34 {
+		t.Errorf("PUSH D did not store E correctly")
+	}
+	if cpu.memory[3] != 0x12 {
+		t.Errorf("PUSH D did not store D correctly")
+	}
+	if cpu.sp != 2 {
+		t.Errorf("PUSH D did not decrement SP correctly")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Fuzz_SUI(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0A, flagName: "Parity", flagMask: Parity},
+		{value: 0x05, flagName: "Zero", flagMask: Zero},
+		{value: 0x14, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x89, flagName: "Sign", flagMask: Sign},
+		{value: 0x04, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xd6, 0x05, 0x00, 0x00})
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-5 {
+			t.Errorf("SUI did not subtract A - Data correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SUI did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Test_RST_2(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xd7})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0010 {
+		t.Errorf("RST 2 did not set PC to 0x0010, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 2 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 2 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RCWithCarrySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RC did not set PC correctly when Carry flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RC did not set SP correctly when Carry flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RCWithCarryUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xd8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Carry, false)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RC modified PC when Carry flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RC modified SP when Carry flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_JC_CarryFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xda, 0x88, 0xff})
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JC dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JC_CarryFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xda, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Carry, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JC dit not set pc correctly")
+	}
+}
+
+func Test_IN(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xdb, 0x88, 0x01, 0x01})
+
+	cpu.Run()
+
+	if cpu.pc != 0x0002 {
+		t.Errorf("IN dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_CCWithCarrySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xdc, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CC did not set PC correctly when Carry flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CC did not set SP correctly when Carry flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CC did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CCWithCarryUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xdc, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Carry, false)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CC did not increment PC correctly when Carry flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CC modified SP when Carry flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Fuzz_SBI(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x0B, flagName: "Parity", flagMask: Parity},
+		{value: 0x06, flagName: "Zero", flagMask: Zero},
+		{value: 0x15, flagName: "AuxCarry", flagMask: AuxCarry},
+		{value: 0x8a, flagName: "Sign", flagMask: Sign},
+		{value: 0x05, flagName: "Carry", flagMask: Carry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xde, 0x05, 0x00, 0x00})
+		cpu.flags.Set(Carry, true)
+		cpu.a = d.value
+
+		cpu.Run()
+
+		if cpu.a != d.value-6 {
+			t.Errorf("SBI did not subtract A - Data - Carry correctly")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("SBI did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 7)
+	})
+}
+
+func Test_RST_3(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xdf})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0018 {
+		t.Errorf("RST 3 did not set PC to 0x0018, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 3 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 3 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPOWithParityUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RPO did not set PC correctly when Parity flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RPO did not set SP correctly when Parity flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPOWithParitySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RPO modified PC when Parity flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RPO modified SP when Parity flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_POP_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe1, 0x34, 0x12})
+	cpu.sp = 1
+
+	cpu.Run()
+
+	if cpu.h != 0x12 {
+		t.Errorf("POP H did not set H register correctly")
+	}
+	if cpu.l != 0x34 {
+		t.Errorf("POP H did not set L register correctly")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("POP H did not set SP correctly")
+	}
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JPO_ParityFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe2, 0x88, 0xff})
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JPO dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JPO_ParityFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe2, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JPO dit not set pc correctly")
+	}
+}
+
+func Test_XTHL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe3, 0x01, 0x88, 0xff, 0x01})
+	cpu.sp = 2
+	cpu.h = 0x99
+	cpu.l = 0x05
+
+	cpu.Run()
+
+	if cpu.h != 0xff {
+		t.Errorf("XTHL dit not set H register correctly")
+	}
+
+	if cpu.l != 0x88 {
+		t.Errorf("XTHL dit not set L register correctly")
+	}
+
+	if cpu.memory[cpu.sp] != 0x05 || cpu.memory[cpu.sp+1] != 0x99 {
+		t.Errorf("XTHL dit not write HL values into memory correctly")
+	}
+	assertCycles(t, cpu, 18)
+}
+
+func Test_CPOWithParityUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CPO did not set PC correctly when Parity flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CPO did not set SP correctly when Parity flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CPO did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CPOWithParitySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CPO did not increment PC correctly when Parity flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CPO modified SP when Parity flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_PUSH_H(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe5, 0x0, 0x0, 0x0, 0x0})
+	cpu.sp = 4
+	cpu.h = 0x12
+	cpu.l = 0x34
+
+	cpu.Run()
+
+	if cpu.memory[2] != 0x34 {
+		t.Errorf("PUSH H did not store L correctly")
+	}
+	if cpu.memory[3] != 0x12 {
+		t.Errorf("PUSH H did not store H correctly")
+	}
+	if cpu.sp != 2 {
+		t.Errorf("PUSH H did not decrement SP correctly")
+	}
+	assertCycles(t, cpu, 11)
 }
 
 func Test_ANI(t *testing.T) {
@@ -4414,6 +4871,532 @@ func Test_ANI(t *testing.T) {
 	assertCycles(t, cpu, 7)
 }
 
+func Test_RST_4(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xe7})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0020 {
+		t.Errorf("RST 4 did not set PC to 0x0020, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 4 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 4 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPEWithParitySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RPE did not set PC correctly when Parity flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RPE did not set SP correctly when Parity flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPEWithParityUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RPE modified PC when Parity flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RPE modified SP when Parity flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_PCHL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xe9, 0x00, 0x00})
+	cpu.h = 0x33
+	cpu.l = 0x0F
+
+	cpu.Run()
+
+	if cpu.pc != 0x330F {
+		t.Errorf("PCHL did not set PC correctly")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_JPE_ParityFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xea, 0x88, 0xff})
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JPE dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JPE_ParityFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xea, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JPE dit not set pc correctly")
+	}
+}
+
+func Test_XCHG(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xeb, 0x00, 0x00})
+	cpu.h = 0x11
+	cpu.l = 0x22
+	cpu.d = 0x33
+	cpu.e = 0x44
+
+	cpu.Run()
+
+	if cpu.h != 0x33 || cpu.l != 0x44 {
+		t.Errorf("XCHG dit not swap HL register pair correctly")
+	}
+
+	if cpu.d != 0x11 || cpu.e != 0x22 {
+		t.Errorf("XCHG dit not swap DE register pair correctly")
+	}
+
+	assertCycles(t, cpu, 5)
+}
+
+func Test_CPEWithParitySet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xec, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Parity, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CPE did not set PC correctly when Parity flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CPE did not set SP correctly when Parity flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CPE did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CPEWithParityUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xec, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Parity, false)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CPE did not increment PC correctly when Parity flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CPE modified SP when Parity flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_XRI(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xee, 0x09, 0x00, 0x00})
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("XRI did not A ^ Data correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("XRI did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("XRI did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_RST_5(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xef})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0028 {
+		t.Errorf("RST 5 did not set PC to 0x0028, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 5 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 5 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPWithSignUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RP did not set PC correctly when Sign flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RP did not set SP correctly when Sign flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RPWithSignSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf0, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RP modified PC when Sign flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RP modified SP when Sign flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Fuzz_POP_PSW_Flags(f *testing.F) {
+	tData := []flagDataTest{
+		{value: 0x04, flagName: "Parity", flagMask: Parity},
+		{value: 0x40, flagName: "Zero", flagMask: Zero},
+		{value: 0x80, flagName: "Sign", flagMask: Sign},
+		{value: 0x01, flagName: "Carry", flagMask: Carry},
+		{value: 0x10, flagName: "AuxCarry", flagMask: AuxCarry},
+	}
+
+	for i := range tData {
+		f.Add(i)
+	}
+
+	f.Fuzz(func(t *testing.T, i int) {
+		d := tData[i]
+		cpu := createCPUWithProgramLoaded([]byte{0xf1, d.value, 0x0A, 0x0})
+		cpu.sp = 1
+
+		cpu.Run()
+
+		if cpu.sp != 3 {
+			t.Errorf("POP PSW did not set SP correcty")
+		}
+
+		if cpu.a != 0x0A {
+			t.Errorf("POP PSW did not set A register correcty")
+		}
+
+		if !cpu.flags.Get(d.flagMask) {
+			t.Errorf("POP PSW did not set the %s flag correctly", d.flagName)
+		}
+
+		assertCycles(t, cpu, 10)
+	})
+}
+
+func Test_JP_SignFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf2, 0x88, 0xff})
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JP dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JP_SignFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf2, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JP dit not set pc correctly")
+	}
+}
+
+func Test_DI(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf3, 0x00, 0x00})
+	cpu.InterruptEnabled = true
+
+	cpu.Run()
+
+	if cpu.InterruptEnabled {
+		t.Errorf("DI dit not disable Interrupts correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+}
+
+func Test_CPWithSignUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CP did not set PC correctly when Sign flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CP did not set SP correctly when Sign flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CP did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CPWithSignSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf4, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CP did not increment PC correctly when Sign flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CP modified SP when Sign flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_PUSH_PSW(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf5, 0x00, 0x00, 0x00})
+	cpu.sp = 3
+	cpu.a = 0x5
+	cpu.flags.Set(Sign, true)
+	cpu.flags.Set(Zero, true)
+	cpu.flags.Set(Parity, true)
+	cpu.flags.Set(AuxCarry, true)
+	cpu.flags.Set(Carry, true)
+
+	cpu.Run()
+
+	if cpu.sp != 1 {
+		t.Errorf("PUSH PSW did not set sp correctly")
+	}
+
+	if cpu.memory[2] != 0x5 {
+		t.Errorf("PUSH PSW did not store A register correctly")
+	}
+
+	if cpu.memory[1] != 0xD7 {
+		t.Errorf("PUSH PSW did not store program status correctly")
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_ORI(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf6, 0x09, 0x00, 0x00})
+	cpu.a = 0x06
+
+	cpu.Run()
+
+	if cpu.a != 0x0F {
+		t.Errorf("ORI did not A | Data correctly")
+	}
+
+	if cpu.flags.Get(Carry) {
+		t.Errorf("ORI did not set the Carry flag correctly")
+	}
+
+	if cpu.flags.Get(AuxCarry) {
+		t.Errorf("ORI did not set the AuxCarry flag correctly")
+	}
+
+	assertCycles(t, cpu, 7)
+}
+
+func Test_RST_6(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xf7})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0030 {
+		t.Errorf("RST 6 did not set PC to 0x0030, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 6 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 6 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RMWithSignSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("RM did not set PC correctly when Sign flag was not set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("RM did not set SP correctly when Sign flag was not set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
+func Test_RMWithSignUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf8, 0x34, 0x12})
+	cpu.sp = 1
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 1 {
+		t.Errorf("RM modified PC when Sign flag was set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("RM modified SP when Sign flag was set")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_SPHL(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xf9, 0x00, 0x00})
+	cpu.h = 0x33
+	cpu.l = 0x0F
+
+	cpu.Run()
+
+	if cpu.sp != 0x330F {
+		t.Errorf("SPHL did not set PC correctly")
+	}
+	assertCycles(t, cpu, 5)
+}
+
+func Test_JM_SignFlagSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xfa, 0x88, 0xff})
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0xff88 {
+		t.Errorf("JM dit not set pc correctly")
+	}
+
+	assertCycles(t, cpu, 10)
+}
+
+func Test_JM_SignFlagUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xfa, 0x88, 0xff, 0x01})
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 0x0003 {
+		t.Errorf("JM dit not set pc correctly")
+	}
+}
+
+func Test_EI(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xfb, 0x00, 0x00})
+	cpu.enableInterruptDeferred = false
+	cpu.InterruptEnabled = false
+
+	cpu.Run()
+
+	if !cpu.enableInterruptDeferred {
+		t.Errorf("EI dit not deferred interrupt correctly")
+	}
+
+	assertCycles(t, cpu, 4)
+
+	cpu.Run()
+
+	if !cpu.InterruptEnabled {
+		t.Errorf("EI dit not enable interrupt correctly")
+	}
+}
+
+func Test_CMWithSignSet(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xfc, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Sign, true)
+
+	cpu.Run()
+
+	if cpu.pc != 0x1234 {
+		t.Errorf("CM did not set PC correctly when Sign flag was not set")
+	}
+	if cpu.sp != 1 {
+		t.Errorf("CM did not set SP correctly when Sign flag was not set")
+	}
+
+	if cpu.memory[1] != 0x03 || cpu.memory[2] != 0x00 {
+		t.Errorf("CM did not store return address correctly")
+	}
+	assertCycles(t, cpu, 17)
+}
+
+func Test_CMWithSignUnset(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0xfc, 0x34, 0x12, 0x00})
+	cpu.sp = 3
+	cpu.flags.Set(Sign, false)
+
+	cpu.Run()
+
+	if cpu.pc != 3 {
+		t.Errorf("CM did not increment PC correctly when Sign flag was set")
+	}
+	if cpu.sp != 3 {
+		t.Errorf("CM modified SP when Sign flag was set")
+	}
+	assertCycles(t, cpu, 11)
+}
+
 func Fuzz_CPI_Flags(f *testing.F) {
 	tData := []flagDataTest{
 		{value: 0xAB, flagName: "Parity", flagMask: Parity},
@@ -4444,4 +5427,26 @@ func Fuzz_CPI_Flags(f *testing.F) {
 
 		assertCycles(t, cpu, 7)
 	})
+}
+
+func Test_RST_7(t *testing.T) {
+	cpu := createCPUWithProgramLoaded([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x1233: 0xff})
+	cpu.sp = 0x04
+	cpu.pc = 0x1233
+
+	cpu.Run()
+
+	if cpu.pc != 0x0038 {
+		t.Errorf("RST 7 did not set PC to 0x0038, got 0x%04x", cpu.pc)
+	}
+
+	if cpu.memory[cpu.sp] != 0x34 || cpu.memory[cpu.sp+1] != 0x12 {
+		t.Errorf("RST 7 did not save return address correctly")
+	}
+
+	if cpu.sp != 0x02 {
+		t.Errorf("RST 7 did not adjust SP correctly, got 0x%04x", cpu.sp)
+	}
+
+	assertCycles(t, cpu, 11)
 }
