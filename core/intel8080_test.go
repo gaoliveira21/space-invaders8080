@@ -12,7 +12,7 @@ type flagDataTest struct {
 
 func createCPUWithProgramLoaded(p []byte) *Intel8080 {
 	cpu := NewIntel8080()
-	cpu.LoadProgram(p)
+	cpu.LoadProgram(p, 0)
 
 	return cpu
 }
@@ -3497,7 +3497,7 @@ func Test_XRA_A(t *testing.T) {
 
 	cpu.Run()
 
-	if cpu.a != 0x06 {
+	if cpu.a != 0x0 {
 		t.Errorf("XRA L did not A ^ L correctly")
 	}
 

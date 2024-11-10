@@ -1,7 +1,6 @@
 package core
 
 import (
-	"log"
 	"math/bits"
 )
 
@@ -9,6 +8,16 @@ type Intel8080Instruction struct {
 	operation func() uint
 	mnemonic  string
 	size      uint16
+}
+
+type Intel8080Registers struct {
+	A byte
+	B byte
+	C byte
+	D byte
+	E byte
+	H byte
+	L byte
 }
 
 type Intel8080 struct {
@@ -31,6 +40,10 @@ type Intel8080 struct {
 
 	InterruptEnabled        bool
 	enableInterruptDeferred bool
+
+	// listeners
+	onInput  func(cpu *Intel8080)
+	onOutput func(cpu *Intel8080)
 }
 
 func NewIntel8080() *Intel8080 {
@@ -80,7 +93,7 @@ func NewIntel8080() *Intel8080 {
 		0x24: {cpu._INR_H, "INR H", 1},
 		0x25: {cpu._DCR_H, "DCR H", 1},
 		0x26: {cpu._MVI_H, "MVI H", 2},
-		0x27: {cpu._NI, "Not Impl", 0}, // IO and Special Group
+		0x27: {cpu._DAA, "DAA", 1},
 		0x28: {cpu._NOP, "*NOP", 1},
 		0x29: {cpu._DAD_H, "DAD H", 1},
 		0x2a: {cpu._LHLD, "LHLD", 3},
@@ -319,8 +332,42 @@ func (cpu *Intel8080) GetMemory() []byte {
 	return cpu.memory[:]
 }
 
-func (cpu *Intel8080) LoadProgram(program []byte) {
-	copy(cpu.memory[:], program)
+func (cpu *Intel8080) LoadProgram(program []byte, offset int) {
+	for i, b := range program {
+		cpu.memory[i+offset] = b
+	}
+}
+
+func (cpu *Intel8080) SetPC(value uint16) {
+	cpu.pc = value
+}
+
+func (cpu *Intel8080) WriteIntoMemory(addr uint16, b byte) {
+	cpu.memory[addr] = b
+}
+
+func (cpu *Intel8080) ReadFromMemory(addr uint16) byte {
+	return cpu.memory[addr]
+}
+
+func (cpu *Intel8080) SetInputListener(listener func(cpu *Intel8080)) {
+	cpu.onInput = listener
+}
+
+func (cpu *Intel8080) SetOutputListener(listener func(cpu *Intel8080)) {
+	cpu.onOutput = listener
+}
+
+func (cpu *Intel8080) GetRegisters() *Intel8080Registers {
+	return &Intel8080Registers{
+		A: cpu.a,
+		B: cpu.b,
+		C: cpu.c,
+		D: cpu.d,
+		E: cpu.e,
+		H: cpu.h,
+		L: cpu.l,
+	}
 }
 
 func (cpu *Intel8080) Run() {
@@ -333,7 +380,6 @@ func (cpu *Intel8080) Run() {
 	}
 
 	instruction := cpu.instructions[opcode]
-	log.Printf("%s Size=%d", instruction.mnemonic, instruction.size)
 	cycles := instruction.operation()
 
 	cpu.cycles += cycles
@@ -475,10 +521,6 @@ func (cpu *Intel8080) rst(addr uint16) {
 	cpu.sp -= 2
 
 	cpu.pc = addr
-}
-
-func (cpu *Intel8080) _NI() uint {
-	panic("Instruction not implemented")
 }
 
 func (cpu *Intel8080) _NOP() uint {
@@ -809,6 +851,33 @@ func (cpu *Intel8080) _MVI_H() uint {
 	cpu.pc++
 
 	return 7
+}
+
+func (cpu *Intel8080) _DAA() uint {
+	daa := uint16(cpu.a)
+
+	if (daa&0x0F) > 0x09 || cpu.flags.Get(AuxCarry) {
+		cpu.flags.Set(AuxCarry, (((daa&0x0F)+0x06)&0xF0) != 0)
+		daa += 0x06
+		if (daa & 0xFF00) != 0 {
+			cpu.flags.Set(Carry, true)
+		}
+	}
+
+	if (daa&0xF0) > 0x90 || cpu.flags.Get(Carry) {
+		daa += 0x60
+		if (daa & 0xFF00) != 0 {
+			cpu.flags.Set(Carry, true)
+		}
+	}
+
+	cpu.a = byte(daa & 0xFF)
+
+	cpu.flags.Set(Zero, cpu.a == 0)
+	cpu.flags.Set(Sign, cpu.a&0x80 != 0)
+	cpu.flags.Set(Parity, hasParity(cpu.a))
+
+	return 4
 }
 
 func (cpu *Intel8080) _DAD_H() uint {
@@ -1600,7 +1669,7 @@ func (cpu *Intel8080) _XRA_M() uint {
 }
 
 func (cpu *Intel8080) _XRA_A() uint {
-	cpu.xra(cpu.e)
+	cpu.xra(cpu.a)
 	return 4
 }
 
@@ -1814,6 +1883,10 @@ func (cpu *Intel8080) _JNC() uint {
 
 func (cpu *Intel8080) _OUT() uint {
 	//TODO: Revisiting this later to implement it correctly
+	if cpu.onOutput != nil {
+		cpu.onOutput(cpu)
+	}
+
 	cpu.pc++
 	return 10
 }
@@ -1864,6 +1937,10 @@ func (cpu *Intel8080) _JC() uint {
 
 func (cpu *Intel8080) _IN() uint {
 	//TODO: Revisiting this later to implement it correctly
+	if cpu.onInput != nil {
+		cpu.onInput(cpu)
+	}
+
 	cpu.pc++
 	return 10
 }

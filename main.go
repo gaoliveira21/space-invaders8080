@@ -4,9 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gaoliveira21/intel8080-space-invaders/api"
 	"github.com/gaoliveira21/intel8080-space-invaders/core"
-	"github.com/gaoliveira21/intel8080-space-invaders/debug"
 )
 
 func main() {
@@ -22,11 +20,15 @@ func main() {
 	log.Printf("%d bytes loaded\n", len(rom))
 
 	cpu := core.NewIntel8080()
-	cpu.LoadProgram(rom)
+	cpu.LoadProgram(rom, 0)
 
-	debugger := debug.NewDebugger(cpu)
-	debugger.Disassemble8080(rom)
-	debugger.DumpMemory()
+	// debugger := debug.NewDebugger(cpu)
+	// debugger.Disassemble8080(rom)
+	// debugger.DumpMemory()
 
-	api.Start()
+	// api.Start()
+
+	for {
+		cpu.Run()
+	}
 }
