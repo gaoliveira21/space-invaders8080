@@ -5,14 +5,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/gaoliveira21/intel8080-space-invaders/core"
+	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
 )
 
-func onInput(cpu *core.Intel8080) {
+func onInput(cpu *cpu.Intel8080) {
 	os.Exit(0)
 }
 
-func onOutput(cpu *core.Intel8080) {
+func onOutput(cpu *cpu.Intel8080) {
 	registers := cpu.GetRegisters()
 	switch registers.C {
 	// C = 0x02 signals printing the value of register E as an ASCII value
@@ -33,18 +33,16 @@ func onOutput(cpu *core.Intel8080) {
 }
 
 func main() {
-	log.Println("Running a test ROM - roms/tests/TST8080.COM")
-	log.Println("Reading ROM...")
-
+	fmt.Println("Running a test ROM - roms/tests/TST8080.COM")
 	rom, err := os.ReadFile("roms/tests/TST8080.COM")
 
 	if err != nil {
 		log.Fatalln("Cannot read ROM", err)
 	}
 
-	log.Printf("%d bytes loaded\n", len(rom))
+	fmt.Printf("%d bytes loaded\n", len(rom))
 
-	cpu := core.NewIntel8080()
+	cpu := cpu.NewIntel8080()
 	cpu.LoadProgram(rom, 0x100)
 	cpu.SetPC(0x100)
 

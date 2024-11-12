@@ -12,7 +12,7 @@
  * C - Carry Flag
  */
 
-package core
+package cpu
 
 type Flag = byte
 

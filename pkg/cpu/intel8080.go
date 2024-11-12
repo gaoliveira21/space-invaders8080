@@ -1,4 +1,4 @@
-package core
+package cpu
 
 import (
 	"math/bits"
