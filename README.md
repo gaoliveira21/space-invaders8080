@@ -1,5 +1,19 @@
 # Intel 8080 Space Invaders :space_invader:
 
+## Testing
+
+```shell
+go run ./cmd/cpudiag/main.go
+Running a test ROM - roms/tests/TST8080.COM
+1536 bytes loaded
+MICROCOSM ASSOCIATES 8080/8085 CPU DIAGNOSTIC
+ VERSION 1.0  (C) 1980
+
+ CPU IS OPERATIONAL
+ ```
+
+## Space Invaders Hardware Info
+
 Space Invaders, (C) Taito 1978, Midway 1979
 
 CPU: Intel 8080 @ 2MHz (CPU similar to the (newer) Zilog Z80)
@@ -27,7 +41,7 @@ RAM
 - $2400-$3fff: video RAM
 - $4000-:      RAM mirror
 
-# References
+## References
 
 - [Emulator 101](http://www.emulator101.com/welcome.html)
 
