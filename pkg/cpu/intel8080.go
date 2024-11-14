@@ -20,6 +20,11 @@ type Intel8080Registers struct {
 	L byte
 }
 
+type IOBus interface {
+	Read(b byte) byte
+	Write(byte, byte)
+}
+
 type Intel8080 struct {
 	// Registers
 	a     byte
@@ -44,11 +49,14 @@ type Intel8080 struct {
 	// listeners
 	onInput  func(cpu *Intel8080)
 	onOutput func(cpu *Intel8080)
+
+	ioBus IOBus
 }
 
-func NewIntel8080() *Intel8080 {
+func NewIntel8080(bus IOBus) *Intel8080 {
 	cpu := &Intel8080{
 		flags: &intel8080Flags{},
+		ioBus: bus,
 	}
 
 	cpu.instructions = [256]*Intel8080Instruction{
@@ -1896,11 +1904,11 @@ func (cpu *Intel8080) _JNC() uint {
 }
 
 func (cpu *Intel8080) _OUT() uint {
-	//TODO: Revisiting this later to implement it correctly
 	if cpu.onOutput != nil {
 		cpu.onOutput(cpu)
 	}
 
+	cpu.ioBus.Write(cpu.memory[cpu.pc], cpu.a)
 	cpu.pc++
 	return 10
 }
@@ -1950,11 +1958,11 @@ func (cpu *Intel8080) _JC() uint {
 }
 
 func (cpu *Intel8080) _IN() uint {
-	//TODO: Revisiting this later to implement it correctly
 	if cpu.onInput != nil {
 		cpu.onInput(cpu)
 	}
 
+	cpu.a = cpu.ioBus.Read(cpu.memory[cpu.pc])
 	cpu.pc++
 	return 10
 }

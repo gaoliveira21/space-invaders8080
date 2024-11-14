@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
+	"github.com/gaoliveira21/intel8080-space-invaders/pkg/io"
 )
 
 func onInput(cpu *cpu.Intel8080) {
@@ -42,7 +43,8 @@ func main() {
 
 	fmt.Printf("%d bytes loaded\n", len(rom))
 
-	cpu := cpu.NewIntel8080()
+	ioBus := io.NewIOBus()
+	cpu := cpu.NewIntel8080(ioBus)
 	cpu.LoadProgram(rom, 0x100)
 	cpu.SetPC(0x100)
 

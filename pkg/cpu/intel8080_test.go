@@ -10,8 +10,16 @@ type flagDataTest struct {
 	flagMask byte
 }
 
+type TestIOBus struct{}
+
+func (tb *TestIOBus) Read(b byte) byte {
+	return b
+}
+
+func (tb *TestIOBus) Write(b1 byte, b2 byte) {}
+
 func createCPUWithProgramLoaded(p []byte) *Intel8080 {
-	cpu := NewIntel8080()
+	cpu := NewIntel8080(&TestIOBus{})
 	cpu.LoadProgram(p, 0)
 
 	return cpu
