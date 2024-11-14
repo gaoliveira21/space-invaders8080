@@ -32,7 +32,7 @@ func main() {
 
 	var instructionCycles uint
 	lastFrame := time.Now()
-	frameRate := time.Second / 60
+	frameRate := time.Second / 120
 	interruptType := 1
 
 	for running {
@@ -51,7 +51,6 @@ func main() {
 				interruptType = 1
 			}
 
-			// Draw
 			display.Draw(cpu.GetVRAM())
 
 			if cpu.InterruptEnabled {
