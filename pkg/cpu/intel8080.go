@@ -370,7 +370,7 @@ func (cpu *Intel8080) GetRegisters() *Intel8080Registers {
 	}
 }
 
-func (cpu *Intel8080) Run() {
+func (cpu *Intel8080) Run() uint {
 	opcode := cpu.memory[cpu.pc]
 	cpu.pc++
 
@@ -383,6 +383,14 @@ func (cpu *Intel8080) Run() {
 	cycles := instruction.operation()
 
 	cpu.cycles += cycles
+
+	return cycles
+}
+
+func (cpu *Intel8080) Interrupt(interruptType int) {
+	cpu.push(byte(cpu.pc>>8), byte(cpu.pc&0xFF))
+	cpu.pc = uint16(interruptType) * 8
+	cpu.InterruptEnabled = false
 }
 
 func hasParity(b byte) bool {

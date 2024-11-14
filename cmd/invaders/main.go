@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
 )
@@ -28,7 +29,34 @@ func main() {
 
 	// api.Start()
 
+	var instructionCycles uint
+	lastFrame := time.Now()
+	frameRate := time.Second / 60
+	interruptType := 1
+
 	for {
-		cpu.Run()
+		if instructionCycles > 0 {
+			instructionCycles--
+			time.Sleep(time.Duration(0))
+			continue
+		}
+
+		instructionCycles = cpu.Run()
+
+		if time.Since(lastFrame) >= frameRate {
+			if interruptType == 1 {
+				interruptType = 2
+			} else {
+				interruptType = 1
+			}
+
+			// Draw
+
+			if cpu.InterruptEnabled {
+				cpu.Interrupt(interruptType)
+			}
+
+			lastFrame = time.Now()
+		}
 	}
 }
