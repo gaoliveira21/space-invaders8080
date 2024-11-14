@@ -35,7 +35,7 @@ type Intel8080 struct {
 	pc     uint16
 	cycles uint
 
-	memory       [0x4000]byte
+	memory       [0xFFFF]byte
 	instructions [256]*Intel8080Instruction
 
 	InterruptEnabled        bool
@@ -336,6 +336,12 @@ func (cpu *Intel8080) LoadProgram(program []byte, offset int) {
 	for i, b := range program {
 		cpu.memory[i+offset] = b
 	}
+}
+
+func (cpu *Intel8080) GetVRAM() []byte {
+	start := 0x2400
+	size := 0x1C00
+	return cpu.memory[start : start+size]
 }
 
 func (cpu *Intel8080) SetPC(value uint16) {
