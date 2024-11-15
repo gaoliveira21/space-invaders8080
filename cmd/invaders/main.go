@@ -72,16 +72,24 @@ func main() {
 					switch t.Keysym.Sym {
 					case sdl.K_c:
 						ioBus.OnInput(1, 0, pressed) // Coin
-					case sdl.K_SPACE:
+					case sdl.K_2:
+						ioBus.OnInput(1, 1, pressed) // 2P start
+					case sdl.K_1:
 						ioBus.OnInput(1, 2, pressed) // 1P start
-					case sdl.K_z:
+					case sdl.K_w:
 						ioBus.OnInput(1, 4, pressed) // 1P shot
-					case sdl.K_LEFT:
+					case sdl.K_a:
 						ioBus.OnInput(1, 5, pressed) // 1P left
-					case sdl.K_RIGHT:
+					case sdl.K_d:
 						ioBus.OnInput(1, 6, pressed) // 1P right
 					case sdl.K_t:
 						ioBus.OnInput(2, 2, pressed) // Tilt (Game over)
+					case sdl.K_UP:
+						ioBus.OnInput(2, 4, pressed) // 2P shot
+					case sdl.K_LEFT:
+						ioBus.OnInput(2, 5, pressed) // 2P left
+					case sdl.K_RIGHT:
+						ioBus.OnInput(2, 6, pressed) // 2P right
 					}
 				case *sdl.QuitEvent:
 					running = false
