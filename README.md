@@ -1,5 +1,9 @@
 # Intel 8080 Space Invaders :space_invader:
 
+## Gameplay
+
+<img src="https://github.com/dustinbowers/intel8080emu/blob/master/assets/gameplay.gif" width="40%">
+
 ## How to run
 
 First of all you have to install `sdl2_mixer`, you can access the following link to see how to install SDL2 in your OS.
