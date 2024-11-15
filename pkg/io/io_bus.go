@@ -1,5 +1,9 @@
 package io
 
+type AudioPlayer interface {
+	Play(soundType byte)
+}
+
 type IOBus struct {
 	//Read 1
 	//BIT	0	coin (0 when active)
@@ -25,19 +29,22 @@ type IOBus struct {
 	shiftH byte
 	shiftL byte
 	offset byte
+
+	audioPlayer AudioPlayer
 }
 
-func NewIOBus() *IOBus {
+func NewIOBus(ap AudioPlayer) *IOBus {
 	return &IOBus{
-		input1: 0x00,
-		input2: 0x00,
-		shiftH: 0x00,
-		shiftL: 0x00,
+		input1:      0x00,
+		input2:      0x00,
+		shiftH:      0x00,
+		shiftL:      0x00,
+		audioPlayer: ap,
 	}
 }
 
-func (io *IOBus) Read(b byte) byte {
-	switch b {
+func (io *IOBus) Read(port byte) byte {
+	switch port {
 	case 0x1:
 		return io.input1
 	case 0x2:
@@ -50,17 +57,24 @@ func (io *IOBus) Read(b byte) byte {
 	}
 }
 
-func (io *IOBus) Write(b byte, A byte) {
-	switch b {
+func (io *IOBus) Write(port byte, A byte) {
+	switch port {
 	case 0x2:
 		io.offset = A & 0x7
 	case 0x3:
-		// TODO: handle with audio
+		io.audioHandler(A, 0x1, UFORepeatsSound)
+		io.audioHandler(A, 0x2, ShotSound)
+		io.audioHandler(A, 0x4, ExplosionSound)
+		io.audioHandler(A, 0x8, InvaderDieSound)
 	case 0x4:
 		io.shiftL = io.shiftH
 		io.shiftH = A
 	case 0x5:
-		// TODO: handle with audio
+		io.audioHandler(A, 0x1, FleetMovement1Sound)
+		io.audioHandler(A, 0x2, FleetMovement2Sound)
+		io.audioHandler(A, 0x4, FleetMovement3Sound)
+		io.audioHandler(A, 0x8, FleetMovement4Sound)
+		io.audioHandler(A, 0x10, UFOHitSound)
 	}
 }
 
@@ -79,5 +93,15 @@ func (io *IOBus) setInput(inputPtr *byte, bit uint8, pressed bool) {
 		*inputPtr |= 1 << bit
 	} else {
 		*inputPtr &= ^(1 << bit)
+	}
+}
+
+func (io *IOBus) audioHandler(soundType, bitMask, soundId byte) {
+	if io.audioPlayer == nil {
+		return
+	}
+
+	if soundType&bitMask != 0 {
+		io.audioPlayer.Play(soundId)
 	}
 }

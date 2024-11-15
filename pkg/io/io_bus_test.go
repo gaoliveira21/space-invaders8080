@@ -3,7 +3,7 @@ package io
 import "testing"
 
 func TestReadInput1(t *testing.T) {
-	bus := NewIOBus()
+	bus := NewIOBus(nil)
 	bus.input1 = 0x05
 
 	if bus.Read(0x1) != bus.input1 {
@@ -12,7 +12,7 @@ func TestReadInput1(t *testing.T) {
 }
 
 func TestReadInput2(t *testing.T) {
-	bus := NewIOBus()
+	bus := NewIOBus(nil)
 	bus.input2 = 0x05
 
 	if bus.Read(0x2) != bus.input2 {
@@ -21,7 +21,7 @@ func TestReadInput2(t *testing.T) {
 }
 
 func TestReadShiftRegisters(t *testing.T) {
-	bus := NewIOBus()
+	bus := NewIOBus(nil)
 	bus.shiftH = 0xff
 	bus.shiftL = 0xaa
 	bus.offset = 2
@@ -32,7 +32,7 @@ func TestReadShiftRegisters(t *testing.T) {
 }
 
 func TestWriteOffset(t *testing.T) {
-	bus := NewIOBus()
+	bus := NewIOBus(nil)
 	bus.Write(0x2, 0x62)
 
 	if bus.offset != 0x2 {
@@ -41,7 +41,7 @@ func TestWriteOffset(t *testing.T) {
 }
 
 func TestWriteShiftRegisters(t *testing.T) {
-	bus := NewIOBus()
+	bus := NewIOBus(nil)
 	bus.shiftH = 0xff
 	bus.Write(0x4, 0xaa)
 

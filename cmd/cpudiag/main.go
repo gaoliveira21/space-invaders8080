@@ -43,7 +43,7 @@ func main() {
 
 	fmt.Printf("%d bytes loaded\n", len(rom))
 
-	ioBus := io.NewIOBus()
+	ioBus := io.NewIOBus(nil)
 	cpu := cpu.NewIntel8080(ioBus)
 	cpu.LoadProgram(rom, 0x100)
 	cpu.SetPC(0x100)

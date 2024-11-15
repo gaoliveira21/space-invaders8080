@@ -23,7 +23,9 @@ func main() {
 
 	log.Printf("%d bytes loaded\n", len(rom))
 
-	ioBus := io.NewIOBus()
+	soundManager := io.NewSoundManager()
+	defer soundManager.Cleanup()
+	ioBus := io.NewIOBus(soundManager)
 	cpu := cpu.NewIntel8080(ioBus)
 	cpu.LoadProgram(rom, 0)
 
