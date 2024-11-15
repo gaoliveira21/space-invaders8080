@@ -65,3 +65,5 @@ MICROCOSM ASSOCIATES 8080/8085 CPU DIAGNOSTIC
 - [Space Invaders - Hardware](http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html)
 
 - [Emutalk - Space Invaders](https://www.emutalk.net/threads/space-invaders.38177/)
+
+- [dustinbowers' intel8080emu ](https://github.com/dustinbowers/intel8080emu/tree/master)
