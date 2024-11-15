@@ -56,6 +56,11 @@ MICROCOSM ASSOCIATES 8080/8085 CPU DIAGNOSTIC
  CPU IS OPERATIONAL
  ```
 
+## TODO
+
+- [] Improve debugging tools
+- [] Add color mask
+
 ## References
 
 - [Emulator 101](http://www.emulator101.com/welcome.html)
