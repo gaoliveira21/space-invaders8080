@@ -1,5 +1,31 @@
 # Intel 8080 Space Invaders :space_invader:
 
+## How to run
+
+### Linux
+
+```shell
+git clone git@github.com:gaoliveira21/space-invaders8080.git
+cd space-invaders8080
+./build/space-invaders
+```
+
+### Other platforms
+
+First of all you have to install `sdl2_mixer`, you can access the following link to see how to install SDL2 in your OS.
+[SDL2 - Installation](https://wiki.libsdl.org/SDL2/Installation)
+
+After having SDL2 installed you can execute the following commands.
+```shell
+git clone git@github.com:gaoliveira21/space-invaders8080.git
+cd space-invaders8080
+
+go mod download
+go build -o ./build/space-invaders ./cmd/invaders/main.go
+
+./build/space-invaders
+```
+
 ## Input
 
 | Key                | Description     |
