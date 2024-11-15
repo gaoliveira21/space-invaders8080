@@ -2,7 +2,7 @@
 
 ## Gameplay
 
-<img src="https://github.com/dustinbowers/intel8080emu/blob/master/assets/gameplay.gif" width="40%">
+<img src="https://github.com/gaoliveira21/space-invaders8080/blob/main/assets/gameplay.gif" width="40%">
 
 ## How to run
 
