@@ -58,8 +58,8 @@ MICROCOSM ASSOCIATES 8080/8085 CPU DIAGNOSTIC
 
 ## TODO
 
-- [] Improve debugging tools
-- [] Add color mask
+- [ ] Improve debugging tools
+- [ ] Add color mask
 
 ## References
 
