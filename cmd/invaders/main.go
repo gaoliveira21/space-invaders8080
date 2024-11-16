@@ -1,14 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/io"
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+func onSignal(c chan os.Signal, running *bool) {
+	for signal := range c {
+		fmt.Printf("signal %s", signal)
+		*running = false
+	}
+}
 
 func main() {
 	log.Println("Starting Space Invaders...")
@@ -21,6 +30,12 @@ func main() {
 	}
 
 	log.Printf("%d bytes loaded\n", len(rom))
+
+	running := true
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go onSignal(c, &running)
 
 	soundManager := io.NewSoundManager()
 	defer soundManager.Cleanup()
@@ -35,8 +50,6 @@ func main() {
 	lastFrame := time.Now()
 	frameRate := time.Second / 120
 	interruptType := 1
-
-	running := true
 
 	for running {
 		if instructionCycles > 0 {
