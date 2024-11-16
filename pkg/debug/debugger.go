@@ -1,6 +1,7 @@
 package debug
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -20,6 +21,7 @@ func NewDebugger(c Cpu) *Debugger {
 }
 
 func (d *Debugger) DumpMemory() {
+	fmt.Println("Dumping memory...")
 	mem := d.cpu.GetMemory()
 
 	if _, err := os.Stat(".dump"); os.IsNotExist(err) {

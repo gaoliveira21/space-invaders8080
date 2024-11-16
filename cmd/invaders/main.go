@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -8,18 +9,27 @@ import (
 	"time"
 
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
+	"github.com/gaoliveira21/intel8080-space-invaders/pkg/debug"
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/io"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func onSignal(c chan os.Signal, running *bool) {
+func onSignal(c chan os.Signal, running *bool, debugger *debug.Debugger) {
 	for signal := range c {
-		fmt.Printf("signal %s", signal)
+		fmt.Printf("signal %s received\n", signal)
+		if debugger != nil {
+			debugger.DumpMemory()
+		}
 		*running = false
 	}
 }
 
 func main() {
+	debugEnabled := flag.Bool("debug", false, "Run emulator in Debug Mode")
+	audioDisabled := flag.Bool("disableAudio", false, "Turn audio On/Off")
+
+	flag.Parse()
+
 	log.Println("Starting Space Invaders...")
 	log.Println("Reading ROM...")
 
@@ -31,17 +41,26 @@ func main() {
 
 	log.Printf("%d bytes loaded\n", len(rom))
 
+	var soundManager *io.SoundManager
+	if !(*audioDisabled) {
+		soundManager = io.NewSoundManager()
+		defer soundManager.Cleanup()
+	}
+
+	ioBus := io.NewIOBus(soundManager)
+	cpu := cpu.NewIntel8080(ioBus)
+	cpu.LoadProgram(rom, 0)
+
+	var debugger *debug.Debugger
+	if *debugEnabled {
+		debugger = debug.NewDebugger(cpu)
+	}
+
 	running := true
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	go onSignal(c, &running)
-
-	soundManager := io.NewSoundManager()
-	defer soundManager.Cleanup()
-	ioBus := io.NewIOBus(soundManager)
-	cpu := cpu.NewIntel8080(ioBus)
-	cpu.LoadProgram(rom, 0)
+	go onSignal(c, &running, debugger)
 
 	io.InitDisplay()
 	defer io.DestroyDisplay()

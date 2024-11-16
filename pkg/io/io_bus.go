@@ -1,5 +1,7 @@
 package io
 
+import "reflect"
+
 type AudioPlayer interface {
 	Play(soundType byte)
 }
@@ -97,11 +99,9 @@ func (io *IOBus) setInput(inputPtr *byte, bit uint8, pressed bool) {
 }
 
 func (io *IOBus) audioHandler(soundType, bitMask, soundId byte) {
-	if io.audioPlayer == nil {
-		return
-	}
-
-	if soundType&bitMask != 0 {
-		io.audioPlayer.Play(soundId)
+	if io.audioPlayer != nil && !reflect.ValueOf(io.audioPlayer).IsNil() {
+		if soundType&bitMask != 0 {
+			io.audioPlayer.Play(soundId)
+		}
 	}
 }
