@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/cpu"
-	"github.com/gaoliveira21/intel8080-space-invaders/pkg/display"
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/io"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -29,8 +28,8 @@ func main() {
 	cpu := cpu.NewIntel8080(ioBus)
 	cpu.LoadProgram(rom, 0)
 
-	display.Init()
-	defer display.Destroy()
+	io.InitDisplay()
+	defer io.DestroyDisplay()
 
 	var instructionCycles uint
 	lastFrame := time.Now()
@@ -55,7 +54,7 @@ func main() {
 				interruptType = 1
 			}
 
-			display.Draw(cpu.GetVRAM())
+			io.Draw(cpu.GetVRAM())
 
 			if cpu.InterruptEnabled {
 				cpu.Interrupt(interruptType)

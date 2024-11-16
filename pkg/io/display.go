@@ -1,4 +1,4 @@
-package display
+package io
 
 import "github.com/veandco/go-sdl2/sdl"
 
@@ -10,7 +10,7 @@ var (
 
 var window *sdl.Window
 
-func Init() {
+func InitDisplay() {
 	if err := sdl.Init(sdl.INIT_VIDEO); err != nil {
 		panic(err)
 	}
@@ -38,19 +38,25 @@ func Draw(vram []byte) {
 		for bit := 0; bit < 8; bit++ {
 			y := (i%32)*8 + bit
 
-			pixel := b & (0x1 << bit)
-
-			color := uint32(0x00000000)
-			if pixel > 0 {
-				color = 0xffffffff
-			}
-
 			rwidth := 1 * scale
 			rheight := 1 * scale
 
+			xPos := int32(x) * rwidth
+			yPos := (height * scale) - int32(y)*rheight
+
+			pixel := b & (0x1 << bit)
+			color := uint32(0x00000000)
+			if pixel > 0 {
+				if yPos >= 192*scale && yPos <= 214*scale {
+					color = 0xff00ff00
+				} else {
+					color = 0xffffffff
+				}
+			}
+
 			surface.FillRect(&sdl.Rect{
-				X: int32(x) * rwidth,
-				Y: (height * scale) - int32(y)*rheight,
+				X: xPos,
+				Y: yPos,
 				W: rwidth,
 				H: rheight,
 			}, color)
@@ -63,7 +69,7 @@ func Draw(vram []byte) {
 	}
 }
 
-func Destroy() {
+func DestroyDisplay() {
 	sdl.Quit()
 	window.Destroy()
 }
