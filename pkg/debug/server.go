@@ -3,6 +3,7 @@ package debug
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
@@ -42,8 +43,29 @@ func getMemoryDump(w http.ResponseWriter, _ *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-func Start() {
-	http.HandleFunc("GET /memory-dump", getMemoryDump)
+func getCpuState(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	cpuState, err := os.ReadFile(".dump/cpu_state.json")
+	if err != nil {
+		res := &ResponseError{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Could not read cpu dump",
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(cpuState)
+}
+
+func (d *Debugger) StartHttpServer() {
+	log.Println("Running debug server...")
+
+	http.HandleFunc("GET /dump/memory", getMemoryDump)
+	http.HandleFunc("GET /dump/cpu", getCpuState)
 
 	http.ListenAndServe(":8080", nil)
 }

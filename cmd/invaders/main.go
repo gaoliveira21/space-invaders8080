@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -16,9 +15,9 @@ import (
 
 func onSignal(c chan os.Signal, running *bool, debugger *debug.Debugger) {
 	for signal := range c {
-		fmt.Printf("signal %s received\n", signal)
+		log.Printf("signal %s received\n", signal)
 		if debugger != nil {
-			debugger.DumpMemory()
+			debugger.Dump()
 		}
 		*running = false
 	}
@@ -26,7 +25,7 @@ func onSignal(c chan os.Signal, running *bool, debugger *debug.Debugger) {
 
 func main() {
 	debugEnabled := flag.Bool("debug", false, "Run emulator in Debug Mode")
-	audioDisabled := flag.Bool("disableAudio", false, "Turn audio On/Off")
+	audioDisabled := flag.Bool("sound-off", false, "Turn audio On/Off")
 
 	flag.Parse()
 
@@ -54,6 +53,7 @@ func main() {
 	var debugger *debug.Debugger
 	if *debugEnabled {
 		debugger = debug.NewDebugger(cpu)
+		go debugger.StartHttpServer()
 	}
 
 	running := true

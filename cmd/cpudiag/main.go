@@ -15,13 +15,13 @@ func onInput(cpu *cpu.Intel8080) {
 
 func onOutput(cpu *cpu.Intel8080) {
 	registers := cpu.GetRegisters()
-	switch registers.C {
+	switch registers["C"] {
 	// C = 0x02 signals printing the value of register E as an ASCII value
 	case 0x02:
-		fmt.Printf("%s", string(registers.E))
+		fmt.Printf("%s", string(registers["E"]))
 		// C = 0x09 signals printing the value of memory pointed to by DE until a '$' character is encountered
 	case 0x09:
-		addr := uint16(registers.D)<<8 | uint16(registers.E)
+		addr := uint16(registers["D"])<<8 | uint16(registers["E"])
 		for {
 			c := cpu.ReadFromMemory(addr)
 			if string(c) == "$" {

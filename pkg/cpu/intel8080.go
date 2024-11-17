@@ -6,18 +6,8 @@ import (
 
 type Intel8080Instruction struct {
 	operation func() uint
-	mnemonic  string
-	size      uint16
-}
-
-type Intel8080Registers struct {
-	A byte
-	B byte
-	C byte
-	D byte
-	E byte
-	H byte
-	L byte
+	Mnemonic  string
+	Size      uint16
 }
 
 type IOBus interface {
@@ -372,15 +362,22 @@ func (cpu *Intel8080) SetOutputListener(listener func(cpu *Intel8080)) {
 	cpu.onOutput = listener
 }
 
-func (cpu *Intel8080) GetRegisters() *Intel8080Registers {
-	return &Intel8080Registers{
-		A: cpu.a,
-		B: cpu.b,
-		C: cpu.c,
-		D: cpu.d,
-		E: cpu.e,
-		H: cpu.h,
-		L: cpu.l,
+func (cpu *Intel8080) GetRegisters() map[string]byte {
+	return map[string]byte{
+		"A": cpu.a,
+		"B": cpu.b,
+		"C": cpu.c,
+		"D": cpu.d,
+		"E": cpu.e,
+		"H": cpu.h,
+		"L": cpu.l,
+	}
+}
+
+func (cpu *Intel8080) GetPointers() map[string]uint16 {
+	return map[string]uint16{
+		"pc": cpu.pc,
+		"sp": cpu.sp,
 	}
 }
 
