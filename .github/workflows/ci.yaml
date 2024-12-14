@@ -1,35 +1,38 @@
-build-linux:
-  name: Build Linux Binary
-  on:
-    push:
-      branches: [main]
-  runs-on: ubuntu-latest
-  needs: [check-deps]
+name: ci
+on:
+  push:
+    branches: [main]
 
-  container:
-    image: golang:1.23
+jobs:
+  build-linux:
+    name: Build Linux Binary
+    runs-on: ubuntu-latest
+    needs: [check-deps]
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    container:
+      image: golang:1.23
 
-    - name: Install SDL2
-      run: apt install libsdl2{,-image,-mixer,-ttf,-gfx}-dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: go mod download
+      - name: Install SDL2
+        run: apt install libsdl2{,-image,-mixer,-ttf,-gfx}-dev
 
-    - name: Build
-      env:
-        OS: linux
-        ARCH: amd64
-        O_DIR: bin
-        ENV: ${{ env.ENVIRONMENT }}
-      run: make build
+      - name: Install dependencies
+        run: go mod download
 
-    - name: Upload artifacts
-      uses: actions/updateload-artifact@v3
-      with:
-        name: main
-        path: ./bin/
+      - name: Build
+        env:
+          OS: linux
+          ARCH: amd64
+          O_DIR: bin
+          ENV: ${{ env.ENVIRONMENT }}
+        run: make build
+
+      - name: Upload artifacts
+        uses: actions/updateload-artifact@v3
+        with:
+          name: main
+          path: ./bin/
 
