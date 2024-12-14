@@ -30,7 +30,7 @@ jobs:
         run: make build
 
       - name: Upload artifacts
-        uses: actions/updateload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: main
           path: ./bin/
