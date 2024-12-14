@@ -35,7 +35,7 @@ func onOutput(cpu *cpu.Intel8080) {
 
 func main() {
 	fmt.Println("Running a test ROM - roms/tests/TST8080.COM")
-	rom, err := os.ReadFile("roms/tests/TST8080.COM")
+	rom, err := os.ReadFile("cmd/cpudiag/roms/tests/TST8080.COM")
 
 	if err != nil {
 		log.Fatalln("Cannot read ROM", err)

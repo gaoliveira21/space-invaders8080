@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"log"
 	"os"
@@ -12,6 +13,10 @@ import (
 	"github.com/gaoliveira21/intel8080-space-invaders/pkg/io"
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+//go:embed roms/space-invaders/invaders
+//go:embed assets
+var fs embed.FS
 
 func onSignal(c chan os.Signal, running *bool, debugger *debug.Debugger) {
 	for signal := range c {
@@ -32,7 +37,7 @@ func main() {
 	log.Println("Starting Space Invaders...")
 	log.Println("Reading ROM...")
 
-	rom, err := os.ReadFile("roms/space-invaders/invaders")
+	rom, err := fs.ReadFile("roms/space-invaders/invaders")
 
 	if err != nil {
 		log.Fatalln("Cannot read ROM", err)
@@ -42,8 +47,10 @@ func main() {
 
 	var soundManager *io.SoundManager
 	if !(*audioDisabled) {
-		soundManager = io.NewSoundManager()
-		defer soundManager.Cleanup()
+		soundManager, err = io.NewSoundManager(fs)
+		if err == nil {
+			defer soundManager.Cleanup()
+		}
 	}
 
 	ioBus := io.NewIOBus(soundManager)

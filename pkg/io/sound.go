@@ -1,6 +1,7 @@
 package io
 
 import (
+	"embed"
 	"fmt"
 
 	"github.com/veandco/go-sdl2/mix"
@@ -23,15 +24,15 @@ type SoundManager struct {
 	sounds map[byte]*mix.Chunk
 }
 
-func NewSoundManager() *SoundManager {
+func NewSoundManager(fs embed.FS) (*SoundManager, error) {
 	if err := sdl.Init(sdl.INIT_AUDIO); err != nil {
-		fmt.Printf("NewSoundManager: Could not init audio %s", err.Error())
-		return nil
+		fmt.Printf("NewSoundManager: Could not init audio %s\n", err.Error())
+		return nil, err
 	}
 
 	if err := mix.OpenAudio(44100, uint16(mix.DEFAULT_FORMAT), 2, 1024); err != nil {
-		fmt.Printf("NewSoundManager: Could not open audio %s", err.Error())
-		return nil
+		fmt.Printf("NewSoundManager: Could not open audio %s\n", err.Error())
+		return nil, err
 	}
 
 	sm := &SoundManager{
@@ -51,15 +52,27 @@ func NewSoundManager() *SoundManager {
 	}
 
 	for id, file := range soundFiles {
-		chunk, err := mix.LoadWAV(file)
+		data, err := fs.ReadFile(file)
 		if err != nil {
-			fmt.Printf("NewSoundManager: Could not load WAV file at %s %s", file, err.Error())
-			return nil
+			fmt.Printf("NewSoundManager: Could not load %s %s\n", file, err.Error())
+			continue
+		}
+
+		rw, err := sdl.RWFromMem(data)
+		if err != nil {
+			fmt.Printf("NewSoundManager: Could not create RW from memory data %s\n", err.Error())
+			continue
+		}
+
+		chunk, err := mix.LoadWAVRW(rw, true)
+		if err != nil {
+			fmt.Printf("NewSoundManager: Could not load WAV file %s %s\n", file, err.Error())
+			continue
 		}
 		sm.sounds[id] = chunk
 	}
 
-	return sm
+	return sm, nil
 }
 
 func (sm *SoundManager) Play(soundId byte) {
