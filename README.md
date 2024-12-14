@@ -11,7 +11,7 @@
 ```shell
 git clone https://github.com/gaoliveira21/space-invaders8080.git
 cd space-invaders8080
-./build/linux64_space_invaders
+./build/linux_amd64_space_invaders
 ```
 
 ### Other platforms
