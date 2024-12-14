@@ -30,8 +30,8 @@ jobs:
         run: make --always-make build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: main
+          name: linux64_space_invaders
           path: ./bin/
 
