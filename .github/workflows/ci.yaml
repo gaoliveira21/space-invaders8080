@@ -7,7 +7,6 @@ jobs:
   build-linux:
     name: Build Linux Binary
     runs-on: ubuntu-latest
-    needs: [check-deps]
 
     container:
       image: golang:1.23
