@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install SDL2
-        run: apt install libsdl2{,-image,-mixer,-ttf,-gfx}-dev
+        run: apt install libsdl2-dev libsdl2-mixer -y
 
       - name: Install dependencies
         run: go mod download
