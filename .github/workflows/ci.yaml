@@ -30,26 +30,8 @@ jobs:
           ENV: ${{ env.ENVIRONMENT }}
         run: make --always-make build
 
-      - name: release
-        uses: actions/create-release@v1
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         id: create_release
         with:
-          draft: false
-          prerelease: false
-          release_name: ${{ github.ref }}
-          tag_name: ${{ github.ref }}
-          body_path: CHANGELOG.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Upload linux artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/linux_amd64_space_invaders
-          asset_name: linux_amd64_space_invaders
-          asset_content_type: application/octet-stream
-
-
+          files: ./bin/linux_amd64_space_invaders
