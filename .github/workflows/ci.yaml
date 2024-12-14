@@ -1,5 +1,8 @@
 build-linux:
   name: Build Linux Binary
+  on:
+    push:
+      branches: [main]
   runs-on: ubuntu-latest
   needs: [check-deps]
 
