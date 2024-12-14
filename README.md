@@ -9,9 +9,9 @@
 ### Linux
 
 ```shell
-git clone https://github.com/gaoliveira21/space-invaders8080.git
-cd space-invaders8080
-./build/linux_amd64_space_invaders
+wget https://github.com/gaoliveira21/space-invaders8080/releases/download/v1.0.2/linux_amd64_space_invaders
+chmod +x ./linux_amd64_space_invaders
+./linux_amd64_space_invaders
 ```
 
 ### Other platforms
