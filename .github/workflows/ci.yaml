@@ -27,7 +27,7 @@ jobs:
           ARCH: amd64
           O_DIR: bin
           ENV: ${{ env.ENVIRONMENT }}
-        run: make build
+        run: make --always-make build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
