@@ -1,7 +1,8 @@
 name: ci
 on:
   push:
-    branches: [main]
+    tags:
+      - '*'
 
 jobs:
   build-linux:
@@ -29,9 +30,26 @@ jobs:
           ENV: ${{ env.ENVIRONMENT }}
         run: make --always-make build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
         with:
-          name: linux64_space_invaders
-          path: ./bin/
+          draft: false
+          prerelease: false
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload linux artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/linux_amd64_space_invaders
+          asset_name: linux_amd64_space_invaders
+          asset_content_type: application/octet-stream
+
 
