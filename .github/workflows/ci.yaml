@@ -5,8 +5,8 @@ on:
       - '*'
 
 jobs:
-  build-linux:
-    name: Build Linux Binary
+  build:
+    name: Build Binaries
     runs-on: ubuntu-latest
 
     container:
@@ -16,22 +16,49 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SDL2
-        run: apt update && apt install libsdl2-dev libsdl2-mixer-dev -y
+      - name: Install SDL2 and other dependencies
+        run: |
+          apt update \
+          && apt install libsdl2-dev libsdl2-mixer-dev mingw-w64 zip -y
 
       - name: Install dependencies
         run: go mod download
 
-      - name: Build
+      - name: Download and prepare SDL2 mingw
+        run: |
+          wget https://github.com/libsdl-org/SDL/releases/download/release-2.30.10/SDL2-devel-2.30.10-mingw.tar.gz \
+          && tar -xvf SDL2-devel-2.30.10-mingw.tar.gz \
+          && cp -r SDL2-2.30.10/x86_64-w64-mingw32 /usr \
+          && cp -r SDL2-2.30.10/i686-w64-mingw32 /usr
+
+      - name: Download and prepare SDL2_mixer mingw
+        run: |
+          wget https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-devel-2.8.0-mingw.tar.gz \
+          && tar -xvf SDL2_mixer-devel-2.8.0-mingw.tar.gz \
+          && cp -r SDL2_mixer-2.8.0/x86_64-w64-mingw32 /usr \
+          && cp -r SDL2_mixer-2.8.0/i686-w64-mingw32 /usr
+
+      - name: Build Linux
         env:
-          OS: linux
-          ARCH: amd64
           O_DIR: bin
           ENV: ${{ env.ENVIRONMENT }}
-        run: make --always-make build
+        run: make --always-make build-linux
+
+      - name: Build Windows
+        env:
+          O_DIR: bin
+          ENV: ${{ env.ENVIRONMENT }}
+        run: |
+          make --always-make build-windows \
+          && cp /usr/x86_64-w64-mingw32/bin/SDL2.dll ./bin/win64_space_invaders \
+          && cp /usr/x86_64-w64-mingw32/bin/SDL2_mixer.dll ./bin/win64_space_invaders \
+          && zip -r ./bin/win64_space_invaders.zip ./bin/win64_space_invaders
+
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         id: create_release
         with:
-          files: ./bin/linux_amd64_space_invaders
+          files: |
+            ./bin/linux_amd64_space_invaders
+            ./bin/win64_space_invaders.zip
